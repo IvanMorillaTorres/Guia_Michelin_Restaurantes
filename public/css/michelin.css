@@ -188,6 +188,148 @@ img {
     background: var(--border-color);
 }
 
+.btn-apply {
+    width: 100%;
+    padding: 12px;
+    background: var(--michelin-red);
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 15px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-apply:hover {
+    background: #b5141b;
+}
+
+/* Range inputs (precio medio) */
+.range-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.range-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+}
+
+.range-input:focus {
+    outline: none;
+    border-color: var(--michelin-red);
+}
+
+.range-separator {
+    color: var(--text-light);
+    font-size: 16px;
+}
+
+/* Checkbox group (tipos de cocina) */
+.checkbox-group {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.checkbox-label:hover {
+    background: var(--michelin-light-gray);
+}
+
+.checkbox-label input[type="checkbox"] {
+    accent-color: var(--michelin-red);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* Rating filter (valoración) */
+.rating-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.radio-label:hover {
+    background: var(--michelin-light-gray);
+}
+
+.radio-label input[type="radio"] {
+    accent-color: var(--michelin-red);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.stars-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.stars-display em {
+    font-style: normal;
+    font-size: 12px;
+    color: var(--text-light);
+    margin-left: 4px;
+}
+
+/* Active filters */
+.active-filters {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.active-filters h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-light);
+    margin-bottom: 10px;
+}
+
+.filter-tag {
+    display: inline-block;
+    background: var(--michelin-red);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin: 3px 2px;
+}
+
 /* ===== RESTAURANTS GRID ===== */
 .restaurants-content {
     min-height: 500px;

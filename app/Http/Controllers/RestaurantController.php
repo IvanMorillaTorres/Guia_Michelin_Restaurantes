@@ -32,11 +32,17 @@ class RestaurantController extends Controller
             }
         }
 
-        // Filtro por tipo de cocina
-        if ($request->has('cuisine') && $request->cuisine != '') {
-            $query->whereHas('cuisineTypes', function($q) use ($request) {
-                $q->where('cuisine_type_id', $request->cuisine);
-            });
+        // Filtro por tipo de cocina (sumativo: permite múltiples selecciones)
+        if ($request->has('cuisine') && !empty($request->cuisine)) {
+            $cuisines = is_array($request->cuisine) ? $request->cuisine : [$request->cuisine];
+            $cuisines = array_filter($cuisines);
+            if (!empty($cuisines)) {
+                foreach ($cuisines as $cuisineId) {
+                    $query->whereHas('cuisineTypes', function($q) use ($cuisineId) {
+                        $q->where('cuisine_type_id', $cuisineId);
+                    });
+                }
+            }
         }
 
         // Filtro por categoría
@@ -49,6 +55,19 @@ class RestaurantController extends Controller
         // Filtro por rango de precio
         if ($request->has('price') && $request->price != '') {
             $query->where('rango_precios', $request->price);
+        }
+
+        // Filtro por precio medio de la carta (min y max)
+        if ($request->has('precio_min') && $request->precio_min != '') {
+            $query->where('precio_medio', '>=', (float) $request->precio_min);
+        }
+        if ($request->has('precio_max') && $request->precio_max != '') {
+            $query->where('precio_medio', '<=', (float) $request->precio_max);
+        }
+
+        // Filtro por valoración mínima de usuarios
+        if ($request->has('valoracion_min') && $request->valoracion_min != '') {
+            $query->where('valoracion', '>=', (float) $request->valoracion_min);
         }
 
         // Ordenamiento

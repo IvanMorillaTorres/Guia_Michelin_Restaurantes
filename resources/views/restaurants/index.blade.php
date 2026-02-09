@@ -44,17 +44,19 @@
                         </select>
                     </div>
 
-                    <!-- Tipo de cocina -->
+                    <!-- Tipo de cocina (selección múltiple sumativa) -->
                     <div class="filter-group">
                         <label>Tipo de cocina</label>
-                        <select name="cuisine" onchange="document.getElementById('filterForm').submit()">
-                            <option value="">Todas</option>
+                        <div class="checkbox-group">
                             @foreach($cuisineTypes as $cuisine)
-                                <option value="{{ $cuisine->id }}" {{ request('cuisine') == $cuisine->id ? 'selected' : '' }}>
-                                    {{ $cuisine->nombre }}
-                                </option>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="cuisine[]" value="{{ $cuisine->id }}"
+                                        {{ is_array(request('cuisine')) && in_array($cuisine->id, request('cuisine')) ? 'checked' : '' }}
+                                        onchange="document.getElementById('filterForm').submit()">
+                                    <span>{{ $cuisine->nombre }}</span>
+                                </label>
                             @endforeach
-                        </select>
+                        </div>
                     </div>
 
                     <!-- Categoría -->
@@ -82,6 +84,44 @@
                         </select>
                     </div>
 
+                    <!-- Precio medio de la carta -->
+                    <div class="filter-group">
+                        <label>Precio medio de la carta (€)</label>
+                        <div class="range-inputs">
+                            <input type="number" name="precio_min" placeholder="Mín" min="0" step="5"
+                                value="{{ request('precio_min') }}"
+                                class="range-input">
+                            <span class="range-separator">—</span>
+                            <input type="number" name="precio_max" placeholder="Màx" min="0" step="5"
+                                value="{{ request('precio_max') }}"
+                                class="range-input">
+                        </div>
+                    </div>
+
+                    <!-- Valoración mínima -->
+                    <div class="filter-group">
+                        <label>Valoración mínima</label>
+                        <div class="rating-filter">
+                            @for($i = 5; $i >= 1; $i--)
+                                <label class="radio-label">
+                                    <input type="radio" name="valoracion_min" value="{{ $i }}"
+                                        {{ request('valoracion_min') == $i ? 'checked' : '' }}
+                                        onchange="document.getElementById('filterForm').submit()">
+                                    <span class="stars-display">
+                                        @for($j = 0; $j < $i; $j++) ⭐ @endfor
+                                        <em>{{ $i }}.0+</em>
+                                    </span>
+                                </label>
+                            @endfor
+                            <label class="radio-label">
+                                <input type="radio" name="valoracion_min" value=""
+                                    {{ request('valoracion_min') == '' ? 'checked' : '' }}
+                                    onchange="document.getElementById('filterForm').submit()">
+                                <span>Totes</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <!-- Ordenar -->
                     <div class="filter-group">
                         <label>Ordenar por</label>
@@ -95,9 +135,33 @@
                         </select>
                     </div>
 
+                    <button type="submit" class="btn-apply">Aplicar filtros</button>
+
                     <button type="button" onclick="window.location='{{ route('restaurants.index') }}'" class="btn-reset">
                         Limpiar filtros
                     </button>
+
+                    <!-- Filtros activos -->
+                    @if(request()->anyFilled(['city', 'stars', 'cuisine', 'category', 'price', 'precio_min', 'precio_max', 'valoracion_min']))
+                        <div class="active-filters">
+                            <h4>Filtres actius:</h4>
+                            @if(request('precio_min') || request('precio_max'))
+                                <span class="filter-tag">
+                                    Preu: {{ request('precio_min', '0') }}€ - {{ request('precio_max', '∞') }}€
+                                </span>
+                            @endif
+                            @if(request('valoracion_min'))
+                                <span class="filter-tag">
+                                    Valoració: ≥ {{ request('valoracion_min') }}.0
+                                </span>
+                            @endif
+                            @if(is_array(request('cuisine')))
+                                @foreach($cuisineTypes->whereIn('id', request('cuisine')) as $ct)
+                                    <span class="filter-tag">{{ $ct->nombre }}</span>
+                                @endforeach
+                            @endif
+                        </div>
+                    @endif
                 </form>
             </aside>
 
