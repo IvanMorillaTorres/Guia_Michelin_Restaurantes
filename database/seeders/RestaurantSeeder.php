@@ -287,6 +287,18 @@ class RestaurantSeeder extends Seeder
                     $restaurant->categories()->attach($category->id);
                 }
             }
+
+            // Asignar imagen principal desde assets
+            $imagePath = 'assets/restaurantes/' . $restaurant->slug . '.jpg';
+            if (file_exists(public_path($imagePath))) {
+                \App\Models\RestaurantImage::create([
+                    'restaurant_id' => $restaurant->id,
+                    'ruta' => $imagePath,
+                    'alt_text' => $restaurant->nombre,
+                    'es_principal' => true,
+                    'orden' => 1,
+                ]);
+            }
         }
     }
 }

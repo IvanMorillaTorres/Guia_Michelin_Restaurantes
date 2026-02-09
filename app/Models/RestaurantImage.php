@@ -31,6 +31,10 @@ class RestaurantImage extends Model
      */
     public function getUrlAttribute()
     {
+        // Si la ruta empieza con 'assets/', usar directamente desde public/
+        if (str_starts_with($this->ruta, 'assets/')) {
+            return asset($this->ruta);
+        }
         return asset('storage/' . $this->ruta);
     }
 }
