@@ -11,10 +11,7 @@ return new class extends Migration
         Schema::create('cuisine_types', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-<<<<<<< HEAD
             $table->string('slug')->unique();
-=======
->>>>>>> 5ba3659da2c0677e98dc44bed1a8c996838cde51
             $table->text('descripcion')->nullable();
             $table->timestamps();
         });
