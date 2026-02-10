@@ -3,55 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Guía Michelin - Restaurantes')</title>
-    <link rel="stylesheet" href="{{ asset('css/michelin.css') }}">
+    <title>@yield('titulo', 'Guia Restaurantes')</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Nuestros estilos -->
+    <link rel="stylesheet" href="{{ asset('css/estilos.css') }}">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
+
+    <!-- Barra de navegacion -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <h1>GUÍA MICHELIN</h1>
-                    <p class="tagline">Restaurantes de Catalunya</p>
-                </div>
-                <nav class="main-nav">
-                    <a href="{{ route('restaurants.index') }}" class="active">Restaurantes</a>
-                </nav>
+            <a class="navbar-brand" href="{{ route('restaurantes.index') }}">
+                <i class="bi bi-shop"></i> Guía Restaurantes
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{{ route('restaurantes.index') }}">
+                    <i class="bi bi-list"></i> Restaurantes
+                </a>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <!-- Main Content -->
-    <main>
-        @yield('content')
+    <!-- Contenido principal -->
+    <main class="py-4">
+        @yield('contenido')
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>Guía Michelin</h4>
-                    <p>La referencia gastronómica internacional</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Enlaces</h4>
-                    <a href="#">Sobre nosotros</a>
-                    <a href="#">Contacto</a>
-                    <a href="#">Prensa</a>
-                </div>
-                <div class="footer-section">
-                    <h4>Síguenos</h4>
-                    <a href="#">Instagram</a>
-                    <a href="#">Facebook</a>
-                    <a href="#">Twitter</a>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 Guía Michelin. Todos los derechos reservados.</p>
-            </div>
-        </div>
+    <!-- Pie de pagina -->
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <p class="mb-0">&copy; 2026 Guía Restaurantes</p>
     </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
