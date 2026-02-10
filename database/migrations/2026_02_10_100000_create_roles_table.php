@@ -6,18 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    // Crear la tabla de roles
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->id();
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id('id_rol');
             $table->string('nombre');
             $table->text('descripcion')->nullable();
-            $table->timestamps();
+            $table->timestamp('fecha_creacion')->useCurrent();
+            $table->timestamp('fecha_edit')->nullable()->useCurrentOnUpdate();
         });
     }
 
+    // Borrar la tabla
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('roles');
     }
 };
