@@ -15,6 +15,17 @@ class RestauranteController extends Controller
         // empezamos la consulta cargando las relaciones
         $consulta = Restaurante::with(['ciudad', 'estilos', 'imagenPrincipal']);
 
+        // busqueda por texto (nombre de restaurante o ciudad)
+        if ($request->busqueda != '') {
+            $busqueda = $request->busqueda;
+            $consulta->where(function ($q) use ($busqueda) {
+                $q->where('nombre_restaurante', 'like', "%{$busqueda}%")
+                  ->orWhereHas('ciudad', function ($qc) use ($busqueda) {
+                      $qc->where('nombre_ciudad', 'like', "%{$busqueda}%");
+                  });
+            });
+        }
+
         // filtro por ciudad
         if ($request->ciudad != '') {
             $consulta->where('id_ciudad', $request->ciudad);

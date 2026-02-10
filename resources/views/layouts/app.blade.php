@@ -3,38 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('titulo', 'Guia Restaurantes')</title>
+    <title>@yield('titulo', 'Guía MICHELIN - Restaurantes')</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Nuestros estilos -->
     <link rel="stylesheet" href="{{ asset('css/estilos.css') }}">
 </head>
 <body>
 
-    <!-- Barra de navegacion -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <!-- Cabecera estilo Michelin -->
+    <header class="cabecera">
         <div class="container">
-            <a class="navbar-brand" href="{{ route('restaurantes.index') }}">
-                <i class="bi bi-shop"></i> Guía Restaurantes
-            </a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{{ route('restaurantes.index') }}">
-                    <i class="bi bi-list"></i> Restaurantes
+            <div class="cabecera-contenido">
+                <a href="{{ route('restaurantes.index') }}" class="logo">
+                    <span class="logo-texto">GUÍA MICHELIN</span>
+                    <span class="logo-subtexto">Restaurantes</span>
                 </a>
+                <nav class="nav-principal">
+                    <a href="{{ route('restaurantes.index') }}" class="activo">Restaurantes</a>
+                </nav>
+                <div class="cabecera-acciones">
+                    <a href="#" class="icono-usuario" title="Mi cuenta"><i class="bi bi-person-circle"></i></a>
+                    <button class="icono-menu" title="Menú"><i class="bi bi-list"></i></button>
+                </div>
             </div>
         </div>
-    </nav>
+        <!-- Barra de filtros rapidos con busqueda -->
+        <div class="filtros-rapidos">
+            <div class="container">
+                <div class="etiquetas-filtro">
+                    <form class="formulario-busqueda" method="GET" action="{{ route('restaurantes.index') }}">
+                        <i class="bi bi-search icono-busqueda"></i>
+                        <input type="text" name="busqueda" class="campo-busqueda" placeholder="Buscar restaurantes, ciudades..." value="{{ request('busqueda') }}">
+                    </form>
+                    <button class="etiqueta-filtro" type="button">Nuevo</button>
+                    <button class="etiqueta-filtro" type="button">Distinción</button>
+                    <button class="etiqueta-filtro" type="button">Hotel recomendado</button>
+                    <button class="etiqueta-filtro" type="button">Reserva online</button>
+                    <button class="etiqueta-filtro" type="button">Días abiertos</button>
+                    <button class="etiqueta-filtro" type="button">Opciones alimentarias</button>
+                    <button class="etiqueta-filtro" type="button">Cocina</button>
+                    <button class="etiqueta-filtro" type="button">Ideal para</button>
+                    <button class="etiqueta-filtro" type="button">Servicios</button>
+                    <button class="etiqueta-filtro" type="button">Precio</button>
+                </div>
+            </div>
+        </div>
+    </header>
 
     <!-- Contenido principal -->
-    <main class="py-4">
+    <main>
         @yield('contenido')
     </main>
 
-    <!-- Pie de pagina -->
-    <footer class="bg-dark text-white text-center py-3 mt-5">
-        <p class="mb-0">&copy; 2026 Guía Restaurantes</p>
+    <!-- Pie de pagina estilo Michelin -->
+    <footer class="pie-pagina">
+        <div class="container">
+            <div class="pie-contenido">
+                <div class="pie-seccion">
+                    <h4>Guía MICHELIN</h4>
+                    <p>La referencia gastronómica desde 1900</p>
+                    <p>Selección de los mejores restaurantes</p>
+                </div>
+                <div class="pie-seccion">
+                    <h4>Selección</h4>
+                    <a href="{{ route('restaurantes.index') }}">Todos los restaurantes</a>
+                    <a href="{{ route('restaurantes.index', ['orden' => 'valoracion']) }}">Mejor valorados</a>
+                </div>
+                <div class="pie-seccion">
+                    <h4>Sobre nosotros</h4>
+                    <p>Proyecto académico</p>
+                    <p>DAW - 2026</p>
+                </div>
+            </div>
+            <div class="pie-inferior">
+                <p>&copy; 2026 Guía MICHELIN Restaurantes &middot; Proyecto educativo</p>
+            </div>
+        </div>
     </footer>
 
     <!-- Bootstrap JS -->

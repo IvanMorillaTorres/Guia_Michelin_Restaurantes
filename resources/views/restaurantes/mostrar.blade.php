@@ -1,144 +1,174 @@
 @extends('layouts.app')
 
-@section('titulo', $restaurante->nombre_restaurante)
+@section('titulo', $restaurante->nombre_restaurante . ' - Guía MICHELIN')
 
 @section('contenido')
+
+<!-- Portada con imagen del restaurante -->
+<section class="detalle-portada">
+    @if($restaurante->imagenes->count() > 0)
+        <img src="{{ $restaurante->imagenes->first()->url }}" alt="{{ $restaurante->nombre_restaurante }}">
+    @else
+        <div class="portada-vacia"></div>
+    @endif
+    <div class="portada-capa">
+        <div class="container">
+            <div class="portada-insignias">
+                @foreach($restaurante->estilos as $estilo)
+                    <span class="insignia-grande michelin">{{ $estilo->nombre_estilo }}</span>
+                @endforeach
+            </div>
+        </div>
+    </div>
+</section>
+
 <div class="container">
+    <!-- Volver al listado -->
+    <div class="detalle-volver">
+        <a href="{{ route('restaurantes.index') }}">
+            <i class="bi bi-arrow-left"></i> Volver al listado
+        </a>
+    </div>
 
-    <!-- Boton para volver -->
-    <a href="{{ route('restaurantes.index') }}" class="btn btn-outline-dark mb-3 mt-2">
-        <i class="bi bi-arrow-left"></i> Volver al listado
-    </a>
-
-    <div class="row">
+    <div class="detalle-distribucion">
         <!-- Columna principal -->
-        <div class="col-md-8">
-            <!-- Imagen principal -->
-            @if($restaurante->imagenes->count() > 0)
-                <img src="{{ $restaurante->imagenes->first()->url }}"
-                    class="img-fluid rounded mb-4" alt="{{ $restaurante->nombre_restaurante }}"
-                    style="width: 100%; max-height: 400px; object-fit: cover;">
-            @endif
-
-            <!-- Nombre del restaurante -->
-            <h1>{{ $restaurante->nombre_restaurante }}</h1>
-
-            <!-- Estrellas de valoracion con Bootstrap Icons -->
-            <div class="mb-3">
-                @for($i = 1; $i <= 5; $i++)
-                    @if($i <= floor($restaurante->valoracion_restaurante))
-                        <i class="bi bi-star-fill text-warning fs-4"></i>
-                    @elseif($i - 0.5 <= $restaurante->valoracion_restaurante)
-                        <i class="bi bi-star-half text-warning fs-4"></i>
-                    @else
-                        <i class="bi bi-star text-warning fs-4"></i>
+        <div class="detalle-principal">
+            <div class="detalle-cabecera">
+                <h1>{{ $restaurante->nombre_restaurante }}</h1>
+                <div class="detalle-meta">
+                    <span class="tipo-cocina">
+                        @foreach($restaurante->estilos as $estilo)
+                            {{ $estilo->nombre_estilo }}@if(!$loop->last) · @endif
+                        @endforeach
+                    </span>
+                    @if($restaurante->precio_restaurante)
+                        <span class="rango-precio">{{ number_format($restaurante->precio_restaurante, 0) }}€</span>
                     @endif
-                @endfor
-                <span class="ms-2 text-muted">({{ number_format($restaurante->valoracion_restaurante, 1) }} / 5.0)</span>
+                </div>
             </div>
 
-            <!-- Estilos de cocina -->
-            <div class="mb-3">
-                @foreach($restaurante->estilos as $estilo)
-                    <span class="badge bg-dark">{{ $estilo->nombre_estilo }}</span>
-                @endforeach
+            <!-- Valoracion -->
+            <div class="valoracion-grande">
+                <span class="estrellas">
+                    @for($i = 1; $i <= 5; $i++)
+                        @if($i <= floor($restaurante->valoracion_restaurante))
+                            <i class="bi bi-star-fill"></i>
+                        @elseif($i - 0.5 <= $restaurante->valoracion_restaurante)
+                            <i class="bi bi-star-half"></i>
+                        @else
+                            <i class="bi bi-star"></i>
+                        @endif
+                    @endfor
+                </span>
+                <span class="texto-valoracion">{{ number_format($restaurante->valoracion_restaurante, 1) }} / 5.0</span>
             </div>
 
             <!-- Descripcion -->
             @if($restaurante->descripcion_restaurante)
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Descripción</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">{{ $restaurante->descripcion_restaurante }}</p>
-                    </div>
+                <div class="detalle-seccion">
+                    <h2>Descripción</h2>
+                    <p class="descripcion">{{ $restaurante->descripcion_restaurante }}</p>
                 </div>
             @endif
 
             <!-- Galeria de imagenes -->
             @if($restaurante->imagenes->count() > 1)
-                <h4 class="mb-3">Galería</h4>
-                <div class="row">
-                    @foreach($restaurante->imagenes as $imagen)
-                        <div class="col-md-4 mb-3">
-                            <img src="{{ $imagen->url }}" class="img-fluid rounded" alt="{{ $restaurante->nombre_restaurante }}">
-                        </div>
-                    @endforeach
+                <div class="detalle-seccion">
+                    <h2>Galería</h2>
+                    <div class="galeria-imagenes">
+                        @foreach($restaurante->imagenes as $imagen)
+                            <img src="{{ $imagen->url }}" alt="{{ $restaurante->nombre_restaurante }}">
+                        @endforeach
+                    </div>
                 </div>
             @endif
         </div>
 
-        <!-- Columna lateral con informacion -->
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información</h5>
-                </div>
-                <ul class="list-group list-group-flush">
-                    @if($restaurante->ciudad)
-                        <li class="list-group-item">
-                            <i class="bi bi-geo-alt"></i> <strong>Ciudad:</strong> {{ $restaurante->ciudad->nombre_ciudad }}
-                        </li>
-                    @endif
-                    @if($restaurante->telefono_restaurante)
-                        <li class="list-group-item">
-                            <i class="bi bi-telephone"></i> <strong>Teléfono:</strong>
-                            <a href="tel:{{ $restaurante->telefono_restaurante }}">{{ $restaurante->telefono_restaurante }}</a>
-                        </li>
-                    @endif
-                    @if($restaurante->web_real_restaurante)
-                        <li class="list-group-item">
-                            <i class="bi bi-globe"></i> <strong>Web:</strong>
-                            <a href="{{ $restaurante->web_real_restaurante }}" target="_blank">Visitar</a>
-                        </li>
-                    @endif
-                    @if($restaurante->precio_restaurante)
-                        <li class="list-group-item">
-                            <i class="bi bi-cash"></i> <strong>Precio medio:</strong>
-                            <span class="fw-bold text-success">{{ number_format($restaurante->precio_restaurante, 0) }}€</span>
-                        </li>
-                    @endif
-                </ul>
+        <!-- Barra lateral con informacion -->
+        <aside class="detalle-lateral">
+            <div class="tarjeta-informacion">
+                <h3>Información</h3>
+
+                @if($restaurante->ciudad)
+                    <div class="info-elemento">
+                        <strong><i class="bi bi-geo-alt-fill"></i> Ciudad</strong>
+                        <p>{{ $restaurante->ciudad->nombre_ciudad }}</p>
+                    </div>
+                @endif
+
+                @if($restaurante->telefono_restaurante)
+                    <div class="info-elemento">
+                        <strong><i class="bi bi-telephone-fill"></i> Teléfono</strong>
+                        <p><a href="tel:{{ $restaurante->telefono_restaurante }}">{{ $restaurante->telefono_restaurante }}</a></p>
+                    </div>
+                @endif
+
+                @if($restaurante->web_real_restaurante)
+                    <div class="info-elemento">
+                        <strong><i class="bi bi-globe2"></i> Web</strong>
+                        <p><a href="{{ $restaurante->web_real_restaurante }}" target="_blank">Visitar web oficial</a></p>
+                    </div>
+                @endif
+
+                @if($restaurante->precio_restaurante)
+                    <div class="info-elemento info-precio">
+                        <strong>Precio medio</strong>
+                        <p class="precio-grande">{{ number_format($restaurante->precio_restaurante, 0) }}€</p>
+                    </div>
+                @endif
             </div>
-        </div>
+        </aside>
     </div>
 
     <!-- Restaurantes parecidos -->
     @if($parecidos->count() > 0)
-        <hr class="my-5">
-        <h3>Restaurantes parecidos</h3>
-        <div class="row mt-3">
-            @foreach($parecidos as $parecido)
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        @if($parecido->imagenPrincipal)
-                            <img src="{{ $parecido->imagenPrincipal->url }}"
-                                class="card-img-top" alt="{{ $parecido->nombre_restaurante }}"
-                                style="height: 150px; object-fit: cover;">
-                        @endif
-                        <div class="card-body">
-                            <h6 class="card-title">{{ $parecido->nombre_restaurante }}</h6>
-                            <!-- Estrellas -->
-                            <div>
-                                @for($i = 1; $i <= 5; $i++)
-                                    @if($i <= floor($parecido->valoracion_restaurante))
-                                        <i class="bi bi-star-fill text-warning small"></i>
-                                    @elseif($i - 0.5 <= $parecido->valoracion_restaurante)
-                                        <i class="bi bi-star-half text-warning small"></i>
-                                    @else
-                                        <i class="bi bi-star text-warning small"></i>
-                                    @endif
-                                @endfor
+        <section class="restaurantes-similares">
+            <h2>Restaurantes similares</h2>
+            <div class="cuadricula-restaurantes">
+                @foreach($parecidos as $parecido)
+                    <article class="tarjeta-restaurante">
+                        <a href="{{ route('restaurantes.mostrar', $parecido->slug) }}" class="tarjeta-enlace">
+                            <div class="tarjeta-imagen">
+                                @if($parecido->imagenPrincipal)
+                                    <img src="{{ $parecido->imagenPrincipal->url }}" alt="{{ $parecido->nombre_restaurante }}">
+                                @else
+                                    <div class="imagen-vacia"></div>
+                                @endif
                             </div>
-                            <a href="{{ route('restaurantes.mostrar', $parecido->slug) }}" class="btn btn-sm btn-outline-dark mt-2">
-                                Ver
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
+                            <div class="tarjeta-contenido">
+                                <h3>{{ $parecido->nombre_restaurante }}</h3>
+                                <div class="tarjeta-info">
+                                    <span class="cocina">
+                                        @foreach($parecido->estilos as $estilo)
+                                            {{ $estilo->nombre_estilo }}@if(!$loop->last), @endif
+                                        @endforeach
+                                    </span>
+                                </div>
+                                <div class="tarjeta-meta">
+                                    <span class="ubicacion">
+                                        <i class="bi bi-geo-alt-fill"></i> {{ $parecido->ciudad->nombre_ciudad ?? '' }}
+                                    </span>
+                                    @if($parecido->precio_restaurante)
+                                        <span class="precio">{{ number_format($parecido->precio_restaurante, 0) }}€</span>
+                                    @endif
+                                </div>
+                                <div class="valoracion">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= floor($parecido->valoracion_restaurante))
+                                            <i class="bi bi-star-fill"></i>
+                                        @elseif($i - 0.5 <= $parecido->valoracion_restaurante)
+                                            <i class="bi bi-star-half"></i>
+                                        @else
+                                            <i class="bi bi-star"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                            </div>
+                        </a>
+                    </article>
+                @endforeach
+            </div>
+        </section>
     @endif
 </div>
 @endsection
