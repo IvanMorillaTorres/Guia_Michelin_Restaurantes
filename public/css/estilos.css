@@ -1,0 +1,22 @@
+/* Estilos personalizados para la guia de restaurantes */
+
+/* La imagen de las tarjetas */
+.card-img-top {
+    object-fit: cover;
+}
+
+/* Links sin subrayado */
+a {
+    text-decoration: none;
+}
+
+/* El footer siempre abajo */
+footer {
+    margin-top: auto;
+}
+
+/* Tarjetas con hover */
+.card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s;
+}
