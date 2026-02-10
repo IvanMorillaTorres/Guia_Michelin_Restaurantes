@@ -11,45 +11,28 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Nuestros estilos -->
-    <link rel="stylesheet" href="{{ asset('css/estilos.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/estilos.css') }}?v={{ @filemtime(public_path('css/estilos.css')) }}">
 </head>
 <body>
 
     <!-- Cabecera estilo Michelin -->
     <header class="cabecera">
-        <div class="container">
+        <div class="cabecera-ancho">
             <div class="cabecera-contenido">
                 <a href="{{ route('restaurantes.index') }}" class="logo">
                     <span class="logo-texto">GUÍA MICHELIN</span>
-                    <span class="logo-subtexto">Restaurantes</span>
                 </a>
-                <nav class="nav-principal">
-                    <a href="{{ route('restaurantes.index') }}" class="activo">Restaurantes</a>
-                </nav>
-                <div class="cabecera-acciones">
-                    <a href="#" class="icono-usuario" title="Mi cuenta"><i class="bi bi-person-circle"></i></a>
-                    <button class="icono-menu" title="Menú"><i class="bi bi-list"></i></button>
-                </div>
-            </div>
-        </div>
-        <!-- Barra de filtros rapidos con busqueda -->
-        <div class="filtros-rapidos">
-            <div class="container">
-                <div class="etiquetas-filtro">
-                    <form class="formulario-busqueda" method="GET" action="{{ route('restaurantes.index') }}">
-                        <i class="bi bi-search icono-busqueda"></i>
-                        <input type="text" name="busqueda" class="campo-busqueda" placeholder="Buscar restaurantes, ciudades..." value="{{ request('busqueda') }}">
-                    </form>
-                    <button class="etiqueta-filtro" type="button">Nuevo</button>
-                    <button class="etiqueta-filtro" type="button">Distinción</button>
-                    <button class="etiqueta-filtro" type="button">Hotel recomendado</button>
-                    <button class="etiqueta-filtro" type="button">Reserva online</button>
-                    <button class="etiqueta-filtro" type="button">Días abiertos</button>
-                    <button class="etiqueta-filtro" type="button">Opciones alimentarias</button>
-                    <button class="etiqueta-filtro" type="button">Cocina</button>
-                    <button class="etiqueta-filtro" type="button">Ideal para</button>
-                    <button class="etiqueta-filtro" type="button">Servicios</button>
-                    <button class="etiqueta-filtro" type="button">Precio</button>
+                <div class="cabecera-derecha">
+                    <nav class="nav-principal">
+                        <a href="{{ route('restaurantes.index') }}" class="activo">Restaurantes</a>
+                        <a href="#">Hoteles</a>
+                        <a href="#">Magazine</a>
+                        <a href="#">Favoritos</a>
+                    </nav>
+                    <div class="cabecera-acciones">
+                        <a href="#" class="icono-usuario" title="Mi cuenta"><i class="bi bi-person-circle"></i></a>
+                        <button class="icono-menu" title="Menú"><i class="bi bi-list"></i></button>
+                    </div>
                 </div>
             </div>
         </div>

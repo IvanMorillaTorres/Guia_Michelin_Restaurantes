@@ -41,11 +41,22 @@ img {
     z-index: 100;
 }
 
+.cabecera-ancho {
+    max-width: none;
+    padding: 0 32px;
+}
+
 .cabecera-contenido {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 14px 0;
+}
+
+.cabecera-derecha {
+    display: flex;
+    align-items: center;
+    gap: 24px;
 }
 
 .logo {
@@ -84,8 +95,7 @@ img {
     font-weight: 600;
     padding: 8px 16px;
     border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     text-decoration: none;
     transition: background 0.2s, color 0.2s;
 }
@@ -96,7 +106,7 @@ img {
 }
 
 .nav-principal a.activo {
-    background: var(--texto-oscuro);
+    background: var(--rojo-michelin);
     color: white;
 }
 
@@ -188,6 +198,9 @@ img {
 }
 
 .etiqueta-filtro {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
     background: white;
     border: 1px solid var(--color-borde);
     border-radius: 20px;
@@ -211,6 +224,65 @@ img {
     background: var(--texto-oscuro);
     color: white;
     border-color: var(--texto-oscuro);
+}
+
+/* --- Etiqueta pill con select invisible --- */
+.etiqueta-select {
+    position: relative;
+    overflow: hidden;
+    padding-right: 28px;
+}
+
+.etiqueta-select span {
+    pointer-events: none;
+}
+
+.etiqueta-select::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid currentColor;
+    pointer-events: none;
+}
+
+.select-oculto {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.etiqueta-limpiar {
+    display: inline-flex;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--color-borde);
+    border-radius: 20px;
+    padding: 5px 15px;
+    font-size: 13px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 600;
+    color: var(--rojo-michelin);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.etiqueta-limpiar:hover {
+    border-color: var(--rojo-michelin);
+    background: #fef2f2;
+    color: var(--rojo-michelin);
 }
 
 /* ===== PORTADA ===== */
@@ -239,150 +311,188 @@ img {
     min-height: 100vh;
 }
 
-.distribucion-restaurantes {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 40px;
-    padding: 40px 0;
+.contenedor-ancho {
+    max-width: none;
+    padding: 0 32px;
 }
 
-/* ===== BARRA DE FILTROS ===== */
+.titulo-pagina {
+    padding: 24px 0 8px;
+}
+
+.titulo-pagina h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--texto-oscuro);
+    margin: 0;
+}
+
+/* ===== BARRA DE BUSQUEDA ===== */
+.fila-busqueda {
+    margin-bottom: 14px;
+}
+
+.campo-busqueda-wrapper {
+    position: relative;
+    max-width: 640px;
+}
+
+.campo-busqueda-wrapper .icono-busqueda {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gris-michelin);
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.campo-busqueda-grande {
+    width: 100%;
+    padding: 12px 18px 12px 44px;
+    border: 1px solid var(--color-borde);
+    border-radius: 28px;
+    font-size: 15px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    color: var(--texto-oscuro);
+    background: white;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.campo-busqueda-grande::placeholder {
+    color: var(--gris-michelin);
+}
+
+.campo-busqueda-grande:focus {
+    border-color: #999;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+}
+
+/* ===== FILA DE FILTROS ===== */
+.fila-filtros {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+}
+
+.filtros-izquierda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.filtros-derecha {
+    margin-left: auto;
+}
+
+/* ===== LINEA SEPARADORA ===== */
+.linea-separadora {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    margin-left: -50vw;
+    border: none;
+    border-top: 1px solid var(--color-borde);
+    margin-top: 16px;
+    margin-bottom: 0;
+}
+
+/* ===== BARRA DE RESULTADOS ===== */
+.barra-resultados {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0 10px;
+}
+
+.barra-resultados .contador-resultados {
+    font-size: 14px;
+    color: var(--texto-claro);
+    font-weight: 400;
+    margin-bottom: 0;
+}
+
+.boton-siguiente {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--color-borde);
+    font-size: 22px;
+    color: var(--texto-oscuro);
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+    line-height: 1;
+}
+
+.boton-siguiente:hover {
+    background: var(--gris-claro);
+    border-color: var(--texto-oscuro);
+    color: var(--texto-oscuro);
+}
+
+.boton-siguiente.desactivado {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* ===== BARRA DE FILTROS (sidebar legacy, hidden) ===== */
+.distribucion-restaurantes {
+    display: block;
+}
+
 .barra-filtros {
+    display: none;
+}
     position: sticky;
     top: 100px;
     height: fit-content;
 }
 
 .barra-filtros h3 {
-    font-size: 20px;
-    margin-bottom: 25px;
-    color: var(--texto-oscuro);
-    font-weight: 700;
+    display: none;
 }
 
 .grupo-filtro {
-    margin-bottom: 22px;
+    display: none;
 }
 
 .grupo-filtro > label {
-    display: block;
-    font-weight: 600;
-    font-size: 12px;
-    margin-bottom: 8px;
-    color: var(--texto-oscuro);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    display: none;
 }
 
 .filtro-selector {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--color-borde);
-    border-radius: 6px;
-    font-size: 14px;
-    background: white;
-    cursor: pointer;
-    font-family: inherit;
-}
-
-.filtro-selector:focus {
-    outline: none;
-    border-color: var(--rojo-michelin);
+    display: none;
 }
 
 .filtro-campo {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--color-borde);
-    border-radius: 6px;
-    font-size: 14px;
-    font-family: inherit;
-}
-
-.filtro-campo:focus {
-    outline: none;
-    border-color: var(--rojo-michelin);
+    display: none;
 }
 
 .filtro-fila-precio {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.filtro-separador {
-    color: var(--texto-claro);
+    display: none;
 }
 
 .filtro-casilla,
 .filtro-radio {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    font-size: 14px;
-}
-
-.filtro-casilla input,
-.filtro-radio input {
-    accent-color: var(--rojo-michelin);
-}
-
-.filtro-casilla label,
-.filtro-radio label {
-    cursor: pointer;
-    font-weight: 400;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.icono-estrella {
-    color: var(--dorado);
-    font-size: 13px;
+    display: none;
 }
 
 .btn-filtrar {
-    width: 100%;
-    padding: 12px;
-    background: var(--rojo-michelin);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    letter-spacing: 0.5px;
-    transition: background 0.3s;
-}
-
-.btn-filtrar:hover {
-    background: #b51419;
+    display: none;
 }
 
 .btn-limpiar {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    background: var(--gris-claro);
-    color: var(--texto-oscuro);
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    margin-top: 10px;
-    text-align: center;
-    cursor: pointer;
-    text-decoration: none;
-    font-family: inherit;
-    transition: background 0.3s;
-}
-
-.btn-limpiar:hover {
-    background: var(--color-borde);
-    color: var(--texto-oscuro);
+    display: none;
 }
 
 .contenido-restaurantes {
@@ -410,22 +520,22 @@ img {
 /* ===== CUADRICULA DE RESTAURANTES ===== */
 .cuadricula-restaurantes {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 28px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
 }
 
 /* ===== TARJETA DE RESTAURANTE ===== */
 .tarjeta-restaurante {
     background: white;
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .tarjeta-restaurante:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.13);
 }
 
 .tarjeta-enlace {
@@ -440,7 +550,7 @@ img {
 
 .tarjeta-imagen {
     position: relative;
-    height: 220px;
+    height: 260px;
     overflow: hidden;
     background: var(--gris-claro);
 }
@@ -453,7 +563,42 @@ img {
 }
 
 .tarjeta-restaurante:hover .tarjeta-imagen img {
-    transform: scale(1.08);
+    transform: scale(1.05);
+}
+
+/* --- Iconos overlay --- */
+.tarjeta-acciones {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 6px;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+
+.tarjeta-restaurante:hover .tarjeta-acciones {
+    opacity: 1;
+}
+
+.accion-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 50%;
+    color: var(--texto-oscuro);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+
+.accion-icono:hover {
+    background: white;
 }
 
 .imagen-vacia {
@@ -467,19 +612,38 @@ img {
 }
 
 .tarjeta-contenido {
-    padding: 18px 20px 20px;
+    padding: 14px 16px 18px;
 }
 
 .tarjeta-contenido h3 {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     color: var(--texto-oscuro);
     line-height: 1.3;
 }
 
+.tarjeta-ubicacion {
+    font-size: 13px;
+    color: var(--texto-claro);
+    margin-bottom: 6px;
+    margin-top: 0;
+}
+
+.tarjeta-linea {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.punto-separador {
+    color: var(--gris-michelin);
+}
+
 .tarjeta-info {
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .cocina {
@@ -489,12 +653,7 @@ img {
 }
 
 .tarjeta-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    padding-top: 10px;
-    border-top: 1px solid var(--color-borde);
+    display: none;
 }
 
 .ubicacion {
@@ -503,7 +662,7 @@ img {
 }
 
 .precio {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     color: var(--dorado);
 }
@@ -859,6 +1018,12 @@ img {
 }
 
 /* ===== ADAPTABLE ===== */
+@media (max-width: 1200px) {
+    .cuadricula-restaurantes {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 1024px) {
     .distribucion-restaurantes {
         grid-template-columns: 1fr;
@@ -874,6 +1039,10 @@ img {
 
     .detalle-lateral {
         position: static;
+    }
+
+    .cuadricula-restaurantes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -894,10 +1063,24 @@ img {
         grid-template-columns: 1fr;
     }
 
+    .contenedor-ancho {
+        padding: 0 16px;
+    }
+
+    .cabecera-ancho {
+        padding: 0 16px;
+    }
+
     .cabecera-contenido {
         flex-direction: column;
         gap: 12px;
         padding: 14px 0;
+    }
+
+    .cabecera-derecha {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
     }
 
     .cabecera-acciones {
@@ -917,8 +1100,7 @@ img {
         padding: 6px 12px;
     }
 
-    .etiquetas-filtro {
-        justify-content: flex-start;
+    .fila-filtros {
         overflow-x: auto;
         flex-wrap: nowrap;
         -webkit-overflow-scrolling: touch;
@@ -926,8 +1108,12 @@ img {
         padding-bottom: 4px;
     }
 
-    .etiquetas-filtro::-webkit-scrollbar {
+    .fila-filtros::-webkit-scrollbar {
         display: none;
+    }
+
+    .filtros-izquierda {
+        flex-wrap: nowrap;
     }
 
     .detalle-portada {

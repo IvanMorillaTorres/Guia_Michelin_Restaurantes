@@ -48,6 +48,19 @@ class RestauranteController extends Controller
             $consulta->where('precio_restaurante', '<=', $request->precio_max);
         }
 
+        // filtro por rango de precio (pill select)
+        if ($request->precio_rango != '') {
+            $rango = $request->precio_rango;
+            if ($rango === '100+') {
+                $consulta->where('precio_restaurante', '>=', 100);
+            } else {
+                $partes = explode('-', $rango);
+                if (count($partes) === 2) {
+                    $consulta->whereBetween('precio_restaurante', [(int)$partes[0], (int)$partes[1]]);
+                }
+            }
+        }
+
         // filtro por valoracion minima
         if ($request->valoracion_min != '') {
             $consulta->where('valoracion_restaurante', '>=', $request->valoracion_min);
