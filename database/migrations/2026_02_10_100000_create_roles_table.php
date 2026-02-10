@@ -12,6 +12,7 @@ return new class extends Migration
         Schema::create('roles', function (Blueprint $table) {
             $table->id('id_rol');
             $table->string('nombre');
+            $table->string('slug')->unique();
             $table->text('descripcion')->nullable();
             $table->timestamp('fecha_creacion')->useCurrent();
             $table->timestamp('fecha_edit')->nullable()->useCurrentOnUpdate();
