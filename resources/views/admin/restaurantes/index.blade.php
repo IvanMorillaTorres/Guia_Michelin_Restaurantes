@@ -10,23 +10,85 @@
     </a>
 </div>
 
-<!-- Buscador rapido -->
-<form method="GET" action="{{ route('admin.restaurantes.index') }}" class="admin-buscador">
-    <input type="text" name="busqueda" value="{{ request('busqueda') }}" placeholder="Buscar por nombre..." class="admin-campo-busqueda">
-    <button type="submit" class="btn-admin-buscar"><i class="bi bi-search"></i></button>
+<!-- Filtros -->
+<form method="GET" action="{{ route('admin.restaurantes.index') }}" class="admin-filtros">
+    <div class="admin-filtros-fila">
+        <div class="admin-filtro-campo">
+            <input type="text" name="busqueda" value="{{ request('busqueda') }}" placeholder="Buscar por nombre..." class="admin-campo-busqueda">
+        </div>
+        <div class="admin-filtro-campo">
+            <select name="ciudad" class="admin-campo-select">
+                <option value="">Todas las ciudades</option>
+                @foreach($ciudades as $ciudad)
+                    <option value="{{ $ciudad->id_ciudad }}" {{ request('ciudad') == $ciudad->id_ciudad ? 'selected' : '' }}>
+                        {{ $ciudad->nombre_ciudad }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="admin-filtro-campo">
+            <select name="estilo" class="admin-campo-select">
+                <option value="">Todos los estilos</option>
+                @foreach($estilos as $estilo)
+                    <option value="{{ $estilo->id_estilo }}" {{ request('estilo') == $estilo->id_estilo ? 'selected' : '' }}>
+                        {{ $estilo->nombre_estilo }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="admin-filtro-campo">
+            <select name="valoracion" class="admin-campo-select">
+                <option value="">Cualquier valoración</option>
+                @for($i = 1; $i <= 5; $i++)
+                    <option value="{{ $i }}" {{ request('valoracion') == $i ? 'selected' : '' }}>
+                        ≥ {{ $i }} ⭐
+                    </option>
+                @endfor
+            </select>
+        </div>
+        <div class="admin-filtro-acciones">
+            <button type="submit" class="btn-admin-buscar"><i class="bi bi-search"></i> Filtrar</button>
+            <a href="{{ route('admin.restaurantes.index') }}" class="btn-admin-limpiar"><i class="bi bi-x-lg"></i></a>
+        </div>
+    </div>
 </form>
+
+<!-- Info resultados -->
+<div class="admin-info-resultados">
+    Mostrando {{ $restaurantes->firstItem() ?? 0 }}–{{ $restaurantes->lastItem() ?? 0 }} de {{ $restaurantes->total() }} restaurantes
+</div>
 
 <!-- Tabla de restaurantes -->
 <div class="admin-tabla-contenedor">
     <table class="admin-tabla">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>
+                    @php $esOrden = request()->has('orden') && request('orden') == 'id_restaurante'; @endphp
+                    <a href="{{ route('admin.restaurantes.index', array_merge(request()->except('orden','dir'), ['orden' => 'id_restaurante', 'dir' => $esOrden && request('dir','asc') == 'asc' ? 'desc' : 'asc'])) }}" class="admin-th-link {{ $esOrden ? 'activo' : '' }}">
+                        ID {!! $esOrden ? (request('dir','asc') == 'asc' ? '▲' : '▼') : '' !!}
+                    </a>
+                </th>
                 <th>Imagen</th>
-                <th>Nombre</th>
+                <th>
+                    @php $esOrden = request('orden') == 'nombre_restaurante'; @endphp
+                    <a href="{{ route('admin.restaurantes.index', array_merge(request()->except('orden','dir'), ['orden' => 'nombre_restaurante', 'dir' => $esOrden && request('dir','asc') == 'asc' ? 'desc' : 'asc'])) }}" class="admin-th-link {{ $esOrden ? 'activo' : '' }}">
+                        Nombre {!! $esOrden ? (request('dir','asc') == 'asc' ? '▲' : '▼') : '' !!}
+                    </a>
+                </th>
                 <th>Ciudad</th>
-                <th>Precio</th>
-                <th>Valoración</th>
+                <th>
+                    @php $esOrden = request('orden') == 'precio_restaurante'; @endphp
+                    <a href="{{ route('admin.restaurantes.index', array_merge(request()->except('orden','dir'), ['orden' => 'precio_restaurante', 'dir' => $esOrden && request('dir','asc') == 'asc' ? 'desc' : 'asc'])) }}" class="admin-th-link {{ $esOrden ? 'activo' : '' }}">
+                        Precio {!! $esOrden ? (request('dir','asc') == 'asc' ? '^' : 'v') : '' !!}
+                    </a>
+                </th>
+                <th>
+                    @php $esOrden = request('orden') == 'valoracion_restaurante'; @endphp
+                    <a href="{{ route('admin.restaurantes.index', array_merge(request()->except('orden','dir'), ['orden' => 'valoracion_restaurante', 'dir' => $esOrden && request('dir','asc') == 'asc' ? 'desc' : 'asc'])) }}" class="admin-th-link {{ $esOrden ? 'activo' : '' }}">
+                        Valoración {!! $esOrden ? (request('dir','asc') == 'asc' ? '^' : 'v') : '' !!}
+                    </a>
+                </th>
                 <th>Estilos</th>
                 <th>Acciones</th>
             </tr>
@@ -77,7 +139,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="admin-vacio">No hay restaurantes registrados.</td>
+                    <td colspan="8" class="admin-vacio">No se encontraron restaurantes con esos filtros.</td>
                 </tr>
             @endforelse
         </tbody>
@@ -85,7 +147,57 @@
 </div>
 
 <!-- Paginacion -->
-<div class="paginacion">
-    {{ $restaurantes->links() }}
+@if($restaurantes->hasPages())
+<div class="admin-paginacion">
+    <div class="admin-paginacion-enlaces">
+        {{-- Anterior --}}
+        @if($restaurantes->onFirstPage())
+            <span class="admin-pagina disabled"><i class="bi bi-chevron-left"></i></span>
+        @else
+            <a href="{{ $restaurantes->previousPageUrl() }}" class="admin-pagina"><i class="bi bi-chevron-left"></i></a>
+        @endif
+
+        {{-- Numeros de pagina --}}
+        @php
+            $paginaActual = $restaurantes->currentPage();
+            $ultimaPagina = $restaurantes->lastPage();
+            $rango = 2;
+            $inicio = max(1, $paginaActual - $rango);
+            $fin = min($ultimaPagina, $paginaActual + $rango);
+        @endphp
+
+        @if($inicio > 1)
+            <a href="{{ $restaurantes->url(1) }}" class="admin-pagina">1</a>
+            @if($inicio > 2)
+                <span class="admin-pagina puntos">…</span>
+            @endif
+        @endif
+
+        @for($i = $inicio; $i <= $fin; $i++)
+            @if($i == $paginaActual)
+                <span class="admin-pagina activa">{{ $i }}</span>
+            @else
+                <a href="{{ $restaurantes->url($i) }}" class="admin-pagina">{{ $i }}</a>
+            @endif
+        @endfor
+
+        @if($fin < $ultimaPagina)
+            @if($fin < $ultimaPagina - 1)
+                <span class="admin-pagina puntos">…</span>
+            @endif
+            <a href="{{ $restaurantes->url($ultimaPagina) }}" class="admin-pagina">{{ $ultimaPagina }}</a>
+        @endif
+
+        {{-- Siguiente --}}
+        @if($restaurantes->hasMorePages())
+            <a href="{{ $restaurantes->nextPageUrl() }}" class="admin-pagina"><i class="bi bi-chevron-right"></i></a>
+        @else
+            <span class="admin-pagina disabled"><i class="bi bi-chevron-right"></i></span>
+        @endif
+    </div>
+    <div class="admin-paginacion-info">
+        Página {{ $restaurantes->currentPage() }} de {{ $restaurantes->lastPage() }}
+    </div>
 </div>
+@endif
 @endsection

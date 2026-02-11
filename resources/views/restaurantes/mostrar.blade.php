@@ -116,6 +116,18 @@
                         <p class="precio-grande">{{ number_format($restaurante->precio_restaurante, 0) }}€</p>
                     </div>
                 @endif
+
+                {{-- Mapa con ubicacion --}}
+                <div class="info-elemento">
+                    <strong><i class="bi bi-map-fill"></i> Ubicación</strong>
+                </div>
+                <iframe
+                    class="mapa-detalle"
+                    src="https://www.google.com/maps?q={{ urlencode($restaurante->nombre_restaurante . ' restaurante ' . ($restaurante->ciudad->nombre_ciudad ?? '')) }}&output=embed"
+                    allowfullscreen
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
             </div>
         </aside>
     </div>
