@@ -929,6 +929,17 @@ img {
     color: var(--rojo-michelin);
 }
 
+/* Mapa del restaurante */
+.mapa-detalle {
+    width: 100%;
+    height: 250px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--color-borde);
+    z-index: 0;
+    display: block;
+}
+
 .info-elemento a:hover {
     text-decoration: underline;
 }
@@ -1392,16 +1403,29 @@ img {
     color: var(--texto-oscuro);
 }
 
-/* Buscador admin */
-.admin-buscador {
+/* Filtros admin */
+.admin-filtros {
+    background: white;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.admin-filtros-fila {
     display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
-    max-width: 400px;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.admin-filtro-campo {
+    flex: 1;
+    min-width: 160px;
 }
 
 .admin-campo-busqueda {
-    flex: 1;
+    width: 100%;
     padding: 9px 14px;
     border: 1px solid var(--color-borde);
     border-radius: 8px;
@@ -1415,14 +1439,153 @@ img {
     border-color: var(--texto-oscuro);
 }
 
+.admin-campo-select {
+    width: 100%;
+    padding: 9px 14px;
+    border: 1px solid var(--color-borde);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Source Sans Pro', sans-serif;
+    background: white;
+    cursor: pointer;
+    appearance: auto;
+}
+
+.admin-campo-select:focus {
+    outline: none;
+    border-color: var(--texto-oscuro);
+}
+
+.admin-filtro-acciones {
+    display: flex;
+    gap: 6px;
+}
+
 .btn-admin-buscar {
     background: var(--texto-oscuro);
     color: white;
     border: none;
-    padding: 0 14px;
+    padding: 9px 16px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
+    font-family: 'Source Sans Pro', sans-serif;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-admin-buscar:hover {
+    background: #111;
+}
+
+.btn-admin-limpiar {
+    background: transparent;
+    color: #999;
+    border: 1px solid var(--color-borde);
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.btn-admin-limpiar:hover {
+    color: var(--rojo-michelin);
+    border-color: var(--rojo-michelin);
+}
+
+/* Info resultados */
+.admin-info-resultados {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 10px;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+/* Encabezados ordenables */
+.admin-th-link {
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.admin-th-link:hover {
+    color: var(--rojo-michelin);
+}
+
+.admin-th-link.activo {
+    color: var(--rojo-michelin);
+    font-weight: 700;
+}
+
+/* Paginacion admin */
+.admin-paginacion {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.admin-paginacion-enlaces {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.admin-pagina {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--color-borde);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Source Sans Pro', sans-serif;
+    color: var(--texto-oscuro);
+    text-decoration: none;
+    background: white;
+    transition: all 0.15s;
+}
+
+.admin-pagina:hover {
+    background: var(--gris-claro);
+    border-color: var(--texto-oscuro);
+    color: var(--texto-oscuro);
+}
+
+.admin-pagina.activa {
+    background: var(--texto-oscuro);
+    border-color: var(--texto-oscuro);
+    color: white;
+    font-weight: 600;
+}
+
+.admin-pagina.disabled {
+    opacity: 0.35;
+    cursor: default;
+    pointer-events: none;
+}
+
+.admin-pagina.puntos {
+    border: none;
+    background: none;
+    min-width: auto;
+    padding: 0 4px;
+    color: #aaa;
+}
+
+.admin-paginacion-info {
+    font-size: 13px;
+    color: #888;
+    font-family: 'Source Sans Pro', sans-serif;
 }
 
 /* Tabla admin */

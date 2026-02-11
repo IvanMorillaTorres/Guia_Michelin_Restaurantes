@@ -18,14 +18,42 @@ class AdminRestauranteController extends Controller
     {
         $consulta = Restaurante::with(['ciudad', 'estilos', 'imagenPrincipal']);
 
-        // busqueda rapida por nombre
-        if ($request->busqueda != '') {
+        // busqueda por nombre
+        if ($request->filled('busqueda')) {
             $consulta->where('nombre_restaurante', 'like', "%{$request->busqueda}%");
         }
 
-        $restaurantes = $consulta->orderBy('nombre_restaurante')->paginate(15)->withQueryString();
+        // filtro por ciudad
+        if ($request->filled('ciudad')) {
+            $consulta->where('id_ciudad', $request->ciudad);
+        }
 
-        return view('admin.restaurantes.index', compact('restaurantes'));
+        // filtro por estilo
+        if ($request->filled('estilo')) {
+            $consulta->whereHas('estilos', function ($q) use ($request) {
+                $q->where('estilos.id_estilo', $request->estilo);
+            });
+        }
+
+        // filtro por valoracion minima
+        if ($request->filled('valoracion')) {
+            $consulta->where('valoracion_restaurante', '>=', $request->valoracion);
+        }
+
+        // ordenacion
+        $orden = $request->get('orden', 'id_restaurante');
+        $dir = $request->get('dir', 'asc');
+        $columasPermitidas = ['nombre_restaurante', 'precio_restaurante', 'valoracion_restaurante', 'id_restaurante'];
+        if (!in_array($orden, $columasPermitidas)) $orden = 'nombre_restaurante';
+        if (!in_array($dir, ['asc', 'desc'])) $dir = 'asc';
+
+        $consulta->orderBy($orden, $dir);
+
+        $restaurantes = $consulta->paginate(10)->withQueryString();
+        $ciudades = Ciudad::orderBy('nombre_ciudad')->get();
+        $estilos = Estilo::orderBy('nombre_estilo')->get();
+
+        return view('admin.restaurantes.index', compact('restaurantes', 'ciudades', 'estilos'));
     }
 
     // formulario para crear un restaurante nuevo
