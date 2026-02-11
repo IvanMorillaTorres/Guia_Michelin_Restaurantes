@@ -11,32 +11,37 @@
 </head>
 <body>
 
-    <!-- Cabecera admin -->
-    <header class="cabecera-admin">
-        <div class="container">
-            <div class="cabecera-admin-contenido">
-                <a href="{{ route('admin.restaurantes.index') }}" class="logo-admin">
+    <!-- Cabecera admin (misma que la web) -->
+    <header class="cabecera">
+        <div class="cabecera-ancho">
+            <div class="cabecera-contenido">
+                <a href="{{ route('admin.restaurantes.index') }}" class="logo">
                     <span class="logo-texto">GUÍA MICHELIN</span>
-                    <span class="logo-subtexto-admin">Panel de Administración</span>
+                    <span class="logo-subtexto">Panel de Administración</span>
                 </a>
-                <nav class="nav-admin">
-                    <a href="{{ route('admin.restaurantes.index') }}" class="activo">
-                        <i class="bi bi-shop"></i> Restaurantes
-                    </a>
-                    <a href="{{ route('restaurantes.index') }}">
-                        <i class="bi bi-eye"></i> Ver web
-                    </a>
-                </nav>
-                <div class="admin-usuario">
-                    <span class="admin-nombre">
-                        <i class="bi bi-person-circle"></i> {{ Auth::user()->nombre }}
-                    </span>
-                    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-                        @csrf
-                        <button type="submit" class="btn-cerrar-sesion">
-                            <i class="bi bi-box-arrow-right"></i> Salir
+                <div class="cabecera-derecha">
+                    <nav class="nav-principal">
+                        <a href="{{ route('admin.restaurantes.index') }}" class="activo">
+                            <i class="bi bi-shop"></i> Restaurantes
+                        </a>
+                        <a href="{{ route('restaurantes.index') }}">
+                            <i class="bi bi-eye"></i> Ver web
+                        </a>
+                    </nav>
+                    <div class="cabecera-acciones">
+                        <button id="btn-dark-mode" class="icono-menu" title="Modo oscuro">
+                            <i class="bi bi-moon-stars"></i>
                         </button>
-                    </form>
+                        <span class="icono-menu" style="cursor:default;" title="{{ Auth::user()->nombre }}">
+                            <i class="bi bi-person-circle"></i>
+                        </span>
+                        <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                            @csrf
+                            <button type="submit" class="icono-menu" title="Cerrar sesión">
+                                <i class="bi bi-box-arrow-right"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -44,7 +49,7 @@
 
     <!-- Contenido admin -->
     <main class="contenido-admin">
-        <div class="container">
+        <div class="container-admin">
             @if(session('exito'))
                 <div class="alerta-exito">
                     <i class="bi bi-check-circle"></i> {{ session('exito') }}
@@ -56,5 +61,47 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function initDarkMode() {
+            const htmlElement = document.documentElement;
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (isDarkMode || (!localStorage.getItem('darkMode') && prefersDark)) {
+                htmlElement.setAttribute('data-theme', 'dark');
+                updateButtonIcon(true);
+            }
+        }
+
+        function updateButtonIcon(isDark) {
+            const btn = document.getElementById('btn-dark-mode');
+            if (btn) {
+                btn.innerHTML = isDark ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-stars"></i>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initDarkMode();
+
+            const btn = document.getElementById('btn-dark-mode');
+            if (btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const htmlElement = document.documentElement;
+                    const isDarkMode = htmlElement.getAttribute('data-theme') === 'dark';
+
+                    if (isDarkMode) {
+                        htmlElement.removeAttribute('data-theme');
+                        localStorage.setItem('darkMode', 'false');
+                    } else {
+                        htmlElement.setAttribute('data-theme', 'dark');
+                        localStorage.setItem('darkMode', 'true');
+                    }
+
+                    updateButtonIcon(!isDarkMode);
+                });
+            }
+        });
+    </script>
 </body>
 </html>
