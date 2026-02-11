@@ -27,6 +27,9 @@
                         <a href="{{ route('restaurantes.index') }}" class="activo">Restaurantes</a>
                     </nav>
                     <div class="cabecera-acciones">
+                        <button id="btn-dark-mode" class="icono-menu" title="Modo oscuro">
+                            <i class="bi bi-moon-stars"></i>
+                        </button>
                         @auth
                             @if(Auth::user()->id_rol == 1)
                                 <a href="{{ route('admin.restaurantes.index') }}" class="btn-panel-admin" title="Panel Admin">
@@ -84,5 +87,52 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Dark Mode Script -->
+    <script>
+        // Detectar y aplicar el modo oscuro
+        function initDarkMode() {
+            const htmlElement = document.documentElement;
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            // Aplicar modo oscuro si está activo o si el sistema prefiere oscuro
+            if (isDarkMode || (!localStorage.getItem('darkMode') && prefersDark)) {
+                htmlElement.setAttribute('data-theme', 'dark');
+                updateButtonIcon(true);
+            }
+        }
+
+        // Actualizar icono del botón
+        function updateButtonIcon(isDark) {
+            const btn = document.getElementById('btn-dark-mode');
+            if (btn) {
+                btn.innerHTML = isDark ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-stars"></i>';
+            }
+        }
+
+        // Toggle dark mode
+        document.addEventListener('DOMContentLoaded', function() {
+            initDarkMode();
+            
+            const btn = document.getElementById('btn-dark-mode');
+            if (btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const htmlElement = document.documentElement;
+                    const isDarkMode = htmlElement.getAttribute('data-theme') === 'dark';
+                    
+                    if (isDarkMode) {
+                        htmlElement.removeAttribute('data-theme');
+                        localStorage.setItem('darkMode', 'false');
+                    } else {
+                        htmlElement.setAttribute('data-theme', 'dark');
+                        localStorage.setItem('darkMode', 'true');
+                    }
+                    
+                    updateButtonIcon(!isDarkMode);
+                });
+            }
+        });
+    </script>
 </body>
 </html>
