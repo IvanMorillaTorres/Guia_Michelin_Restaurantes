@@ -1,22 +1,2128 @@
-/* Estilos personalizados para la guia de restaurantes */
 
-/* La imagen de las tarjetas */
-.card-img-top {
-    object-fit: cover;
+:root {
+    --rojo-michelin: #d71921;
+    --oscuro-michelin: #1a1a1a;
+    --gris-michelin: #666;
+    --gris-claro: #f5f5f5;
+    --texto-oscuro: #2c2c2c;
+    --texto-claro: #666;
+    --color-borde: #e0e0e0;
+    --dorado: #d4af37;
+    --verde: #2d7a3e;
 }
 
-/* Links sin subrayado */
+/* Modo oscuro */
+html[data-theme="dark"] {
+    --rojo-michelin: #ff4444;
+    --oscuro-michelin: #0a0a0a;
+    --gris-michelin: #aaa;
+    --gris-claro: #1e1e1e;
+    --texto-oscuro: #e8e8e8;
+    --texto-claro: #b0b0b0;
+    --color-borde: #333;
+    --dorado: #ffd700;
+    --verde: #4ade80;
+}
+
+
+body {
+    font-family: 'Source Sans Pro', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--texto-oscuro);
+    line-height: 1.6;
+    background: #fff;
+}
+
 a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/*CABECERA*/
+.cabecera {
+    background: white;
+    color: var(--texto-oscuro);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.cabecera-ancho {
+    max-width: none;
+    padding: 0 32px;
+}
+
+.cabecera-contenido {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+}
+
+.cabecera-derecha {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.logo {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: var(--texto-oscuro);
+}
+
+.logo:hover {
+    color: var(--texto-oscuro);
+}
+
+.logo-texto {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--texto-oscuro);
+}
+
+.logo-subtexto {
+    font-size: 11px;
+    color: var(--gris-michelin);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.nav-principal {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-principal a {
+    color: var(--texto-oscuro);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.nav-principal a:hover {
+    background: var(--gris-claro);
+    color: var(--texto-oscuro);
+}
+
+.nav-principal a.activo {
+    background: var(--rojo-michelin);
+    color: white;
+}
+
+/*Acciones de cabecera*/
+.cabecera-acciones {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.icono-usuario {
+    color: var(--texto-oscuro);
+    font-size: 22px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.icono-usuario:hover {
+    color: var(--gris-michelin);
+}
+
+.icono-menu {
+    background: none;
+    border: none;
+    color: var(--texto-oscuro);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.3s;
+}
+
+.icono-menu:hover {
+    color: var(--gris-michelin);
+}
+
+/* --- Barra de busqueda (dentro de filtros rapidos) --- */
+.formulario-busqueda {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.icono-busqueda {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gris-michelin);
+    font-size: 14px;
+    pointer-events: none;
+}
+
+.campo-busqueda {
+    padding: 6px 14px 6px 34px;
+    border: 1px solid var(--color-borde);
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 600;
+    background: var(--gris-claro);
+    color: var(--texto-oscuro);
+    outline: none;
+    width: 240px;
+    transition: border-color 0.3s, background 0.3s, width 0.3s;
+}
+
+.campo-busqueda::placeholder {
+    color: var(--gris-michelin);
+}
+
+.campo-busqueda:focus {
+    background: white;
+    border-color: #bbb;
+    width: 300px;
+}
+
+/* --- Filtros rapidos (etiquetas pill) --- */
+.filtros-rapidos {
+    background: white;
+    padding: 10px 0;
+    border-top: 1px solid var(--color-borde);
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.etiquetas-filtro {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.etiqueta-filtro {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--color-borde);
+    border-radius: 20px;
+    padding: 5px 15px;
+    font-size: 13px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 600;
+    color: var(--texto-oscuro);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.etiqueta-filtro:hover {
+    border-color: var(--texto-oscuro);
+    color: var(--texto-oscuro);
+    background: var(--gris-claro);
+}
+
+.etiqueta-filtro.seleccionada {
+    background: var(--texto-oscuro);
+    color: white;
+    border-color: var(--texto-oscuro);
+}
+
+/* --- Etiqueta pill con select invisible --- */
+.etiqueta-select {
+    position: relative;
+    overflow: hidden;
+    padding-right: 28px;
+}
+
+.etiqueta-select span {
+    pointer-events: none;
+}
+
+.etiqueta-select::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid currentColor;
+    pointer-events: none;
+}
+
+.select-oculto {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.etiqueta-limpiar {
+    display: inline-flex;
+    align-items: center;
+    background: white;
+    border: 1px solid var(--color-borde);
+    border-radius: 20px;
+    padding: 5px 15px;
+    font-size: 13px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 600;
+    color: var(--rojo-michelin);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
     text-decoration: none;
 }
 
-/* El footer siempre abajo */
-footer {
-    margin-top: auto;
+.etiqueta-limpiar:hover {
+    border-color: var(--rojo-michelin);
+    background: #fef2f2;
+    color: var(--rojo-michelin);
 }
 
-/* Tarjetas con hover */
-.card:hover {
-    transform: translateY(-2px);
-    transition: transform 0.2s;
+/* ===== PORTADA ===== */
+.portada {
+    background: linear-gradient(135deg, var(--oscuro-michelin) 0%, var(--rojo-michelin) 100%);
+    color: white;
+    padding: 55px 0;
+    text-align: center;
+}
+
+.portada h1 {
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+}
+
+.portada p {
+    font-size: 17px;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+/* ===== PAGINA DE RESTAURANTES ===== */
+.pagina-restaurantes {
+    min-height: 100vh;
+}
+
+.contenedor-ancho {
+    max-width: none;
+    padding: 0 32px;
+}
+
+.titulo-pagina {
+    padding: 24px 0 8px;
+}
+
+.titulo-pagina h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--texto-oscuro);
+    margin: 0;
+}
+
+/* ===== BARRA DE BUSQUEDA ===== */
+.fila-busqueda {
+    margin-bottom: 14px;
+}
+
+.campo-busqueda-wrapper {
+    position: relative;
+    max-width: 640px;
+}
+
+.campo-busqueda-wrapper .icono-busqueda {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gris-michelin);
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.campo-busqueda-grande {
+    width: 100%;
+    padding: 12px 18px 12px 44px;
+    border: 1px solid var(--color-borde);
+    border-radius: 28px;
+    font-size: 15px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    color: var(--texto-oscuro);
+    background: white;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.campo-busqueda-grande::placeholder {
+    color: var(--gris-michelin);
+}
+
+.campo-busqueda-grande:focus {
+    border-color: #999;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+}
+
+/* ===== FILA DE FILTROS ===== */
+.fila-filtros {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+}
+
+.filtros-izquierda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.filtros-derecha {
+    margin-left: auto;
+}
+
+/* ===== LINEA SEPARADORA ===== */
+.linea-separadora {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    margin-left: -50vw;
+    border: none;
+    border-top: 1px solid var(--color-borde);
+    margin-top: 16px;
+    margin-bottom: 0;
+}
+
+/* ===== BARRA DE RESULTADOS ===== */
+.barra-resultados {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0 10px;
+}
+
+.barra-resultados .contador-resultados {
+    font-size: 14px;
+    color: var(--texto-claro);
+    font-weight: 400;
+    margin-bottom: 0;
+}
+
+.boton-siguiente {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--color-borde);
+    font-size: 22px;
+    color: var(--texto-oscuro);
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+    line-height: 1;
+}
+
+.boton-siguiente:hover {
+    background: var(--gris-claro);
+    border-color: var(--texto-oscuro);
+    color: var(--texto-oscuro);
+}
+
+.boton-siguiente.desactivado {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* ===== BARRA DE FILTROS (sidebar legacy, hidden) ===== */
+.distribucion-restaurantes {
+    display: block;
+}
+
+.barra-filtros {
+    display: none;
+}
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+}
+
+.barra-filtros h3 {
+    display: none;
+}
+
+.grupo-filtro {
+    display: none;
+}
+
+.grupo-filtro > label {
+    display: none;
+}
+
+.filtro-selector {
+    display: none;
+}
+
+.filtro-campo {
+    display: none;
+}
+
+.filtro-fila-precio {
+    display: none;
+}
+
+.filtro-casilla,
+.filtro-radio {
+    display: none;
+}
+
+.btn-filtrar {
+    display: none;
+}
+
+.btn-limpiar {
+    display: none;
+}
+
+.contenido-restaurantes {
+    min-height: 500px;
+}
+
+.contador-resultados {
+    font-size: 14px;
+    color: var(--texto-claro);
+    margin-bottom: 20px;
+    font-weight: 400;
+}
+
+.sin-resultados {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--texto-claro);
+}
+
+.sin-resultados h3 {
+    margin-top: 15px;
+    font-size: 22px;
+}
+
+/* ===== CUADRICULA DE RESTAURANTES ===== */
+.cuadricula-restaurantes {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+}
+
+/* ===== TARJETA DE RESTAURANTE ===== */
+.tarjeta-restaurante {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.tarjeta-restaurante:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.13);
+}
+
+.tarjeta-enlace {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.tarjeta-enlace:hover {
+    color: inherit;
+}
+
+.tarjeta-imagen {
+    position: relative;
+    height: 260px;
+    overflow: hidden;
+    background: var(--gris-claro);
+}
+
+.tarjeta-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+
+.tarjeta-restaurante:hover .tarjeta-imagen img {
+    transform: scale(1.05);
+}
+
+/* --- Iconos overlay --- */
+.tarjeta-acciones {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 6px;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+
+.tarjeta-restaurante:hover .tarjeta-acciones {
+    opacity: 1;
+}
+
+.accion-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 50%;
+    color: var(--texto-oscuro);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+
+.accion-icono:hover {
+    background: white;
+}
+
+.imagen-vacia {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+}
+
+.tarjeta-contenido {
+    padding: 14px 16px 18px;
+}
+
+.tarjeta-contenido h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--texto-oscuro);
+    line-height: 1.3;
+}
+
+.tarjeta-ubicacion {
+    font-size: 13px;
+    color: var(--texto-claro);
+    margin-bottom: 6px;
+    margin-top: 0;
+}
+
+.tarjeta-linea {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.punto-separador {
+    color: var(--gris-michelin);
+}
+
+.tarjeta-info {
+    margin-bottom: 6px;
+}
+
+.cocina {
+    font-size: 13px;
+    color: var(--texto-claro);
+    font-style: italic;
+}
+
+.tarjeta-meta {
+    display: none;
+}
+
+.ubicacion {
+    font-size: 13px;
+    color: var(--texto-claro);
+}
+
+.precio {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--dorado);
+}
+
+.valoracion {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dorado);
+}
+
+.valoracion .bi {
+    font-size: 14px;
+}
+
+.numero-valoracion {
+    font-size: 13px;
+    color: var(--texto-claro);
+    font-weight: 400;
+    margin-left: 4px;
+}
+
+/* ===== PAGINACION ===== */
+.paginacion {
+    margin-top: 45px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination .page-link {
+    color: var(--rojo-michelin);
+    border-color: var(--color-borde);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--rojo-michelin);
+    border-color: var(--rojo-michelin);
+    color: white;
+}
+
+.pagination .page-link:hover {
+    background-color: var(--gris-claro);
+    color: var(--rojo-michelin);
+}
+
+/* ===== PAGINA DE DETALLE ===== */
+.detalle-portada {
+    height: 450px;
+    position: relative;
+    background: var(--gris-claro);
+    overflow: hidden;
+}
+
+.detalle-portada img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.portada-vacia {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 100px;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+}
+
+.portada-capa {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+    padding: 40px 0 30px;
+}
+
+.portada-insignias {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.insignia-grande {
+    padding: 10px 22px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.insignia-grande.michelin {
+    background: var(--rojo-michelin);
+}
+
+.detalle-volver {
+    padding: 20px 0 10px;
+}
+
+.detalle-volver a {
+    color: var(--rojo-michelin);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.3s;
+}
+
+.detalle-volver a:hover {
+    color: #b51419;
+}
+
+.detalle-distribucion {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 50px;
+    padding: 20px 0 50px;
+}
+
+.detalle-cabecera h1 {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--texto-oscuro);
+    line-height: 1.2;
+}
+
+.detalle-meta {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--color-borde);
+}
+
+.tipo-cocina {
+    font-size: 16px;
+    color: var(--texto-claro);
+    font-style: italic;
+}
+
+.rango-precio {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--dorado);
+}
+
+.valoracion-grande {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.valoracion-grande .estrellas {
+    font-size: 22px;
+    color: var(--dorado);
+}
+
+.valoracion-grande .estrellas .bi {
+    font-size: 22px;
+}
+
+.texto-valoracion {
+    font-size: 14px;
+    color: var(--texto-claro);
+}
+
+.detalle-seccion {
+    margin-bottom: 35px;
+}
+
+.detalle-seccion h2 {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: var(--texto-oscuro);
+}
+
+.descripcion {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--texto-claro);
+}
+
+.galeria-imagenes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+}
+
+.galeria-imagenes img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+.galeria-imagenes img:hover {
+    transform: scale(1.03);
+}
+
+/* ===== BARRA LATERAL DE DETALLE ===== */
+.detalle-lateral {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+}
+
+.tarjeta-informacion {
+    background: white;
+    border: 1px solid var(--color-borde);
+    border-radius: 12px;
+    padding: 28px;
+}
+
+.tarjeta-informacion h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 22px;
+    color: var(--texto-oscuro);
+}
+
+.info-elemento {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.info-elemento:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.info-elemento strong {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--texto-claro);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-elemento p {
+    font-size: 15px;
+    color: var(--texto-oscuro);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.info-elemento a {
+    color: var(--rojo-michelin);
+}
+
+/* Mapa del restaurante */
+.mapa-detalle {
+    width: 100%;
+    height: 250px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--color-borde);
+    z-index: 0;
+    display: block;
+}
+
+.info-elemento a:hover {
+    text-decoration: underline;
+}
+
+.info-precio {
+    text-align: center;
+    background: var(--gris-claro);
+    padding: 18px;
+    border-radius: 8px;
+    border-bottom: none !important;
+}
+
+.precio-grande {
+    font-size: 34px !important;
+    font-weight: 700 !important;
+    color: var(--rojo-michelin) !important;
+    margin-top: 8px;
+}
+
+/* ===== RESTAURANTES SIMILARES ===== */
+.restaurantes-similares {
+    margin-top: 50px;
+    padding-top: 50px;
+    border-top: 2px solid var(--color-borde);
+    padding-bottom: 30px;
+}
+
+.restaurantes-similares h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: var(--texto-oscuro);
+}
+
+/* ===== PIE DE PAGINA ===== */
+.pie-pagina {
+    background: var(--oscuro-michelin);
+    color: white;
+    padding: 50px 0 25px;
+    margin-top: 60px;
+}
+
+.pie-contenido {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+.pie-seccion h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.pie-seccion p {
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 8px;
+}
+
+.pie-seccion a {
+    display: block;
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 8px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.pie-seccion a:hover {
+    color: var(--rojo-michelin);
+}
+
+.pie-inferior {
+    text-align: center;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.pie-inferior p {
+    font-size: 13px;
+    color: #777;
+    margin: 0;
+}
+
+/* ===== ADAPTABLE ===== */
+@media (max-width: 1200px) {
+    .cuadricula-restaurantes {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1024px) {
+    .distribucion-restaurantes {
+        grid-template-columns: 1fr;
+    }
+
+    .barra-filtros {
+        position: static;
+    }
+
+    .detalle-distribucion {
+        grid-template-columns: 1fr;
+    }
+
+    .detalle-lateral {
+        position: static;
+    }
+
+    .cuadricula-restaurantes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .portada h1 {
+        font-size: 30px;
+    }
+
+    .portada p {
+        font-size: 15px;
+    }
+
+    .detalle-cabecera h1 {
+        font-size: 30px;
+    }
+
+    .cuadricula-restaurantes {
+        grid-template-columns: 1fr;
+    }
+
+    .contenedor-ancho {
+        padding: 0 16px;
+    }
+
+    .cabecera-ancho {
+        padding: 0 16px;
+    }
+
+    .cabecera-contenido {
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px 0;
+    }
+
+    .cabecera-derecha {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .cabecera-acciones {
+        position: absolute;
+        top: 14px;
+        right: 15px;
+    }
+
+    .nav-principal {
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .nav-principal a {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .fila-filtros {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 4px;
+    }
+
+    .fila-filtros::-webkit-scrollbar {
+        display: none;
+    }
+
+    .filtros-izquierda {
+        flex-wrap: nowrap;
+    }
+
+    .detalle-portada {
+        height: 280px;
+    }
+
+    .pie-contenido {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Boton panel admin en cabecera */
+.btn-panel-admin {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--texto-oscuro);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.btn-panel-admin:hover {
+    background: #444;
+    color: white;
+}
+
+/*PAGINA DE LOGIN*/
+.pagina-login {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gris-claro);
+    padding: 40px 20px;
+}
+
+.caja-login {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.caja-login h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--texto-oscuro);
+    margin-bottom: 6px;
+}
+
+.subtitulo-login {
+    color: var(--gris-michelin);
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.campo-formulario {
+    margin-bottom: 18px;
+}
+
+.campo-formulario label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--texto-oscuro);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.campo-formulario input,
+.campo-formulario select,
+.campo-formulario textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--color-borde);
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: 'Source Sans Pro', sans-serif;
+    color: var(--texto-oscuro);
+    background: white;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.campo-formulario input:focus,
+.campo-formulario select:focus,
+.campo-formulario textarea:focus {
+    outline: none;
+    border-color: var(--texto-oscuro);
+}
+
+.btn-login {
+    width: 100%;
+    padding: 12px;
+    background: var(--texto-oscuro);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Source Sans Pro', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+}
+
+.btn-login:hover {
+    background: #444;
+}
+
+.alerta-error {
+    background: #fff0f0;
+    border: 1px solid #fcc;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+}
+
+.alerta-error p {
+    color: #c33;
+    font-size: 14px;
+    margin: 4px 0;
+}
+
+.alerta-exito {
+    background: #f0fff4;
+    border: 1px solid #b2dfdb;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    color: var(--verde);
+    font-weight: 600;
+}
+
+/* ===== PANEL DE ADMINISTRACION ===== */
+.cabecera-admin {
+    background: var(--texto-oscuro);
+    color: white;
+    padding: 0;
+}
+
+.cabecera-admin-contenido {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    gap: 20px;
+}
+
+.logo-admin {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: white;
+    flex-shrink: 0;
+}
+
+.logo-admin:hover {
+    color: white;
+}
+
+.logo-subtexto-admin {
+    font-size: 10px;
+    color: #aaa;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.nav-admin {
+    display: flex;
+    gap: 8px;
+}
+
+.nav-admin a {
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.nav-admin a:hover {
+    color: white;
+    background: rgba(255,255,255,0.1);
+}
+
+.nav-admin a.activo {
+    color: white;
+    background: rgba(255,255,255,0.15);
+}
+
+.admin-usuario {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.admin-nombre {
+    font-size: 13px;
+    color: #ccc;
+}
+
+.btn-cerrar-sesion {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #ccc;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'Source Sans Pro', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cerrar-sesion:hover {
+    color: white;
+    border-color: white;
+}
+
+.contenido-admin {
+    padding: 30px 0;
+    min-height: 80vh;
+    background: var(--gris-claro);
+}
+
+.admin-cabecera-seccion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.admin-cabecera-seccion h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--texto-oscuro);
+    margin: 0;
+}
+
+.btn-admin-nuevo {
+    background: var(--texto-oscuro);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.btn-admin-nuevo:hover {
+    background: #444;
+    color: white;
+}
+
+.btn-admin-volver {
+    color: var(--gris-michelin);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.btn-admin-volver:hover {
+    color: var(--texto-oscuro);
+}
+
+/* Filtros admin */
+.admin-filtros {
+    background: white;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.admin-filtros-fila {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.admin-filtro-campo {
+    flex: 1;
+    min-width: 160px;
+}
+
+.admin-campo-busqueda {
+    width: 100%;
+    padding: 9px 14px;
+    border: 1px solid var(--color-borde);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Source Sans Pro', sans-serif;
+    background: white;
+}
+
+.admin-campo-busqueda:focus {
+    outline: none;
+    border-color: var(--texto-oscuro);
+}
+
+.admin-campo-select {
+    width: 100%;
+    padding: 9px 14px;
+    border: 1px solid var(--color-borde);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Source Sans Pro', sans-serif;
+    background: white;
+    cursor: pointer;
+    appearance: auto;
+}
+
+.admin-campo-select:focus {
+    outline: none;
+    border-color: var(--texto-oscuro);
+}
+
+.admin-filtro-acciones {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-admin-buscar {
+    background: var(--texto-oscuro);
+    color: white;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Source Sans Pro', sans-serif;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-admin-buscar:hover {
+    background: #111;
+}
+
+.btn-admin-limpiar {
+    background: transparent;
+    color: #999;
+    border: 1px solid var(--color-borde);
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.btn-admin-limpiar:hover {
+    color: var(--rojo-michelin);
+    border-color: var(--rojo-michelin);
+}
+
+/* Info resultados */
+.admin-info-resultados {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 10px;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+/* Encabezados ordenables */
+.admin-th-link {
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.admin-th-link:hover {
+    color: var(--rojo-michelin);
+}
+
+.admin-th-link.activo {
+    color: var(--rojo-michelin);
+    font-weight: 700;
+}
+
+/* Paginacion admin */
+.admin-paginacion {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.admin-paginacion-enlaces {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.admin-pagina {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--color-borde);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Source Sans Pro', sans-serif;
+    color: var(--texto-oscuro);
+    text-decoration: none;
+    background: white;
+    transition: all 0.15s;
+}
+
+.admin-pagina:hover {
+    background: var(--gris-claro);
+    border-color: var(--texto-oscuro);
+    color: var(--texto-oscuro);
+}
+
+.admin-pagina.activa {
+    background: var(--texto-oscuro);
+    border-color: var(--texto-oscuro);
+    color: white;
+    font-weight: 600;
+}
+
+.admin-pagina.disabled {
+    opacity: 0.35;
+    cursor: default;
+    pointer-events: none;
+}
+
+.admin-pagina.puntos {
+    border: none;
+    background: none;
+    min-width: auto;
+    padding: 0 4px;
+    color: #aaa;
+}
+
+.admin-paginacion-info {
+    font-size: 13px;
+    color: #888;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+/* Tabla admin */
+.admin-tabla-contenedor {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow-x: auto;
+}
+
+.admin-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.admin-tabla thead {
+    background: var(--gris-claro);
+}
+
+.admin-tabla th {
+    padding: 12px 14px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gris-michelin);
+    border-bottom: 2px solid var(--color-borde);
+}
+
+.admin-tabla td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.admin-tabla tbody tr:hover {
+    background: #fafafa;
+}
+
+.admin-miniatura {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.admin-sin-imagen {
+    font-size: 24px;
+}
+
+.admin-valoracion {
+    color: var(--dorado);
+    font-weight: 600;
+}
+
+.admin-etiqueta {
+    display: inline-block;
+    background: var(--gris-claro);
+    color: var(--gris-michelin);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin: 1px 2px;
+}
+
+.admin-acciones {
+    white-space: nowrap;
+}
+
+.btn-admin-editar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: #e8f4fd;
+    color: #1976d2;
+    border-radius: 6px;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background 0.2s;
+    margin-right: 4px;
+}
+
+.btn-admin-editar:hover {
+    background: #bbdefb;
+}
+
+.btn-admin-eliminar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: #fce4ec;
+    color: #c62828;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-admin-eliminar:hover {
+    background: #f8bbd0;
+}
+
+.admin-vacio {
+    text-align: center;
+    color: var(--gris-michelin);
+    padding: 40px !important;
+}
+
+.texto-gris {
+    color: var(--gris-michelin);
+}
+
+/* Formulario admin */
+.admin-formulario {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.admin-grid-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 24px;
+}
+
+.admin-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.admin-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px 10px;
+    border: 1px solid var(--color-borde);
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.admin-checkbox:hover {
+    background: var(--gris-claro);
+}
+
+.admin-checkbox input:checked + span,
+.admin-checkbox:has(input:checked) {
+    background: #e8f5e9;
+    border-color: var(--verde);
+}
+
+.campo-archivo {
+    padding: 8px;
+    border: 2px dashed var(--color-borde);
+    border-radius: 8px;
+    background: var(--gris-claro);
+    cursor: pointer;
+}
+
+.admin-galeria {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.admin-galeria-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--color-borde);
+}
+
+.admin-galeria-item img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+}
+
+.admin-eliminar-imagen {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 8px;
+    font-size: 12px;
+    color: #c33;
+    cursor: pointer;
+    background: #fff5f5;
+}
+
+.admin-form-acciones {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-borde);
+}
+
+.btn-admin-guardar {
+    background: var(--texto-oscuro);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Source Sans Pro', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-admin-guardar:hover {
+    background: #444;
+}
+
+.btn-admin-cancelar {
+    color: var(--gris-michelin);
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.btn-admin-cancelar:hover {
+    color: var(--texto-oscuro);
+}
+
+@media (max-width: 768px) {
+    .cabecera-admin-contenido {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .admin-cabecera-seccion {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .admin-grid-form {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== MODO OSCURO - ESTILOS GENERALES ===== */
+html[data-theme="dark"] {
+    background: #121212;
+}
+
+html[data-theme="dark"] body {
+    background: #121212;
+    color: var(--texto-oscuro);
+}
+
+html[data-theme="dark"] .cabecera {
+    background: #1e1e1e;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+
+html[data-theme="dark"] .campo-busqueda-grande {
+    background: #2a2a2a;
+    border-color: #444;
+}
+
+html[data-theme="dark"] .campo-busqueda-grande:focus {
+    border-color: #666;
+    background: #2a2a2a;
+}
+
+html[data-theme="dark"] .etiqueta-filtro {
+    background: #2a2a2a;
+    border-color: #444;
+    color: var(--texto-oscuro);
+}
+
+html[data-theme="dark"] .etiqueta-filtro:hover {
+    border-color: var(--texto-oscuro);
+    background: #333;
+}
+
+html[data-theme="dark"] .etiqueta-filtro.seleccionada {
+    background: var(--texto-oscuro);
+    color: #121212;
+    border-color: var(--texto-oscuro);
+}
+
+html[data-theme="dark"] .etiqueta-limpiar {
+    background: #2a2a2a;
+    border-color: #444;
+    color: var(--rojo-michelin);
+}
+
+html[data-theme="dark"] .etiqueta-limpiar:hover {
+    border-color: var(--rojo-michelin);
+    background: #3a1a1a;
+}
+
+html[data-theme="dark"] .tarjeta-restaurante {
+    background: #1e1e1e;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+html[data-theme="dark"] .tarjeta-restaurante:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+}
+
+html[data-theme="dark"] .tarjeta-imagen {
+    background: #2a2a2a;
+}
+
+html[data-theme="dark"] .imagen-vacia {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+}
+
+html[data-theme="dark"] .accion-icono {
+    background: rgba(30,30,30,0.92);
+    color: var(--texto-oscuro);
+}
+
+html[data-theme="dark"] .accion-icono:hover {
+    background: #333;
+}
+
+html[data-theme="dark"] .filtros-rapidos {
+    background: #1e1e1e;
+    border-top-color: #333;
+    border-bottom-color: #333;
+}
+
+html[data-theme="dark"] .linea-separadora {
+    border-top-color: #333;
+}
+
+html[data-theme="dark"] .pagination .page-link {
+    border-color: #444;
+    color: var(--rojo-michelin);
+    background: #2a2a2a;
+}
+
+html[data-theme="dark"] .pagination .page-item.active .page-link {
+    background-color: var(--rojo-michelin);
+    border-color: var(--rojo-michelin);
+}
+
+html[data-theme="dark"] .pagination .page-link:hover {
+    background-color: #333;
+    color: var(--rojo-michelin);
+}
+
+html[data-theme="dark"] .detalle-portada {
+    background: #2a2a2a;
+}
+
+html[data-theme="dark"] .portada-vacia {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+}
+
+html[data-theme="dark"] .detalle-volver a {
+    color: var(--rojo-michelin);
+}
+
+html[data-theme="dark"] .detalle-volver a:hover {
+    color: #ff6666;
+}
+
+html[data-theme="dark"] .detalle-meta {
+    border-bottom-color: #333;
+}
+
+html[data-theme="dark"] .tarjeta-informacion {
+    background: #1e1e1e;
+    border-color: #333;
+}
+
+html[data-theme="dark"] .info-elemento {
+    border-bottom-color: #333;
+}
+
+html[data-theme="dark"] .info-precio {
+    background: #2a2a2a;
+    border-color: #333 !important;
+}
+
+html[data-theme="dark"] .restaurantes-similares {
+    border-top-color: #333;
+}
+
+html[data-theme="dark"] .pie-pagina {
+    background: #0a0a0a;
+    border-top: 1px solid #333;
+}
+
+html[data-theme="dark"] .pie-inferior {
+    border-top-color: rgba(255,255,255,0.05);
+}
+
+html[data-theme="dark"] .portada {
+    background: linear-gradient(135deg, #0a0a0a 0%, #cc0000 100%);
+}
+
+/* Estilos oscuros para formularios */
+html[data-theme="dark"] .campo-formulario input,
+html[data-theme="dark"] .campo-formulario select,
+html[data-theme="dark"] .campo-formulario textarea,
+html[data-theme="dark"] .admin-campo-busqueda {
+    background: #2a2a2a;
+    border-color: #444;
+    color: var(--texto-oscuro);
+}
+
+html[data-theme="dark"] .campo-formulario input:focus,
+html[data-theme="dark"] .campo-formulario select:focus,
+html[data-theme="dark"] .campo-formulario textarea:focus,
+html[data-theme="dark"] .admin-campo-busqueda:focus {
+    border-color: var(--rojo-michelin);
+    background: #2a2a2a;
+}
+
+html[data-theme="dark"] .caja-login {
+    background: #1e1e1e;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+html[data-theme="dark"] .pagina-login {
+    background: #121212;
+}
+
+html[data-theme="dark"] .alerta-error {
+    background: #3a1a1a;
+    border-color: #7a3a3a;
+}
+
+html[data-theme="dark"] .alerta-error p {
+    color: #ff6666;
+}
+
+html[data-theme="dark"] .alerta-exito {
+    background: #1a3a1a;
+    border-color: #3a7a3a;
+    color: #66ff66;
+}
+
+/* Estilos oscuros para panel admin */
+html[data-theme="dark"] .cabecera-admin {
+    background: #0a0a0a;
+    border-bottom: 1px solid #333;
+}
+
+html[data-theme="dark"] .contenido-admin {
+    background: #121212;
+}
+
+html[data-theme="dark"] .admin-tabla-contenedor {
+    background: #1e1e1e;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+html[data-theme="dark"] .admin-tabla thead {
+    background: #2a2a2a;
+}
+
+html[data-theme="dark"] .admin-tabla th {
+    border-bottom-color: #444;
+    color: var(--gris-michelin);
+}
+
+html[data-theme="dark"] .admin-tabla td {
+    border-bottom-color: #2a2a2a;
+}
+
+html[data-theme="dark"] .admin-tabla tbody tr:hover {
+    background: #242424;
+}
+
+html[data-theme="dark"] .admin-formulario {
+    background: #1e1e1e;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+html[data-theme="dark"] .admin-etiqueta {
+    background: #2a2a2a;
+    color: var(--gris-michelin);
+}
+
+html[data-theme="dark"] .admin-checkbox {
+    border-color: #444;
+}
+
+html[data-theme="dark"] .admin-checkbox:hover {
+    background: #2a2a2a;
+}
+
+html[data-theme="dark"] .admin-checkbox:has(input:checked) {
+    background: #1a3a1a;
+    border-color: var(--verde);
+}
+
+html[data-theme="dark"] .campo-archivo {
+    border-color: #444;
+    background: #2a2a2a;
+}
+
+html[data-theme="dark"] .admin-galeria-item {
+    border-color: #444;
+}
+
+html[data-theme="dark"] .admin-form-acciones {
+    border-top-color: #333;
+}
+
+html[data-theme="dark"] .sin-resultados {
+    color: var(--texto-claro);
+}
+
+html[data-theme="dark"] .contenedor-ancho {
+    background: #121212;
 }

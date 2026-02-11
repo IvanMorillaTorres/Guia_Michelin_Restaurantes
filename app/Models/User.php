@@ -40,9 +40,35 @@ class User extends Authenticatable
         return $this->belongsTo(Rol::class, 'id_rol', 'id_rol');
     }
 
-    // para que laravel use password_hash en vez de password
+    /**
+     * Obtener el nombre de la columna de contraseña
+     */
+    public function getAuthPasswordName()
+    {
+        return 'password_hash';
+    }
+
+    /**
+     * Obtener la contraseña hasheada para autenticación
+     */
     public function getAuthPassword()
     {
         return $this->password_hash;
+    }
+
+    /**
+     * Accessor para password que retorna password_hash
+     */
+    public function getPasswordAttribute()
+    {
+        return $this->password_hash ?? null;
+    }
+
+    /**
+     * Mutator para password que hashea el valor a password_hash
+     */
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password_hash'] = \Illuminate\Support\Facades\Hash::make($value);
     }
 }

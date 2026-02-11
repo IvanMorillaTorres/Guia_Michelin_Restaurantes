@@ -1,13 +1,34 @@
 <?php
 
 use App\Http\Controllers\RestauranteController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\AdminRestauranteController;
 use Illuminate\Support\Facades\Route;
 
-// pagina principal - muestra los restaurantes
-Route::get('/', [RestauranteController::class, 'index'])->name('restaurantes.index');
+// --- autenticacion (publica) ---
+Route::get('/login', [AuthController::class, 'mostrarLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// listado de restaurantes
-Route::get('/restaurantes', [RestauranteController::class, 'index'])->name('restaurantes.listado');
+// --- rutas protegidas (requieren login) ---
+Route::middleware('auth')->group(function () {
 
-// ver un restaurante en detalle
-Route::get('/restaurante/{slug}', [RestauranteController::class, 'mostrar'])->name('restaurantes.mostrar');
+    // pagina principal - muestra los restaurantes
+    Route::get('/', [RestauranteController::class, 'index'])->name('restaurantes.index');
+
+    // listado de restaurantes
+    Route::get('/restaurantes', [RestauranteController::class, 'index'])->name('restaurantes.listado');
+
+    // ver un restaurante en detalle
+    Route::get('/restaurante/{slug}', [RestauranteController::class, 'mostrar'])->name('restaurantes.mostrar');
+});
+
+// --- panel de administracion (solo admin) ---
+Route::prefix('admin')->middleware(['auth', 'esAdmin'])->group(function () {
+    Route::get('/restaurantes', [AdminRestauranteController::class, 'index'])->name('admin.restaurantes.index');
+    Route::get('/restaurantes/crear', [AdminRestauranteController::class, 'crear'])->name('admin.restaurantes.crear');
+    Route::post('/restaurantes', [AdminRestauranteController::class, 'guardar'])->name('admin.restaurantes.guardar');
+    Route::get('/restaurantes/{id}/editar', [AdminRestauranteController::class, 'editar'])->name('admin.restaurantes.editar');
+    Route::put('/restaurantes/{id}', [AdminRestauranteController::class, 'actualizar'])->name('admin.restaurantes.actualizar');
+    Route::delete('/restaurantes/{id}', [AdminRestauranteController::class, 'eliminar'])->name('admin.restaurantes.eliminar');
+});

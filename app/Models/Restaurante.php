@@ -19,6 +19,8 @@ class Restaurante extends Model
         'descripcion_restaurante',
         'valoracion_restaurante',
         'web_real_restaurante',
+        'latitud',
+        'longitud',
         'id_ciudad',
     ];
 

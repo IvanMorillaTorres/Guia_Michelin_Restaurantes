@@ -15,6 +15,17 @@ class RestauranteController extends Controller
         // empezamos la consulta cargando las relaciones
         $consulta = Restaurante::with(['ciudad', 'estilos', 'imagenPrincipal']);
 
+        // busqueda por texto (nombre de restaurante o ciudad)
+        if ($request->busqueda != '') {
+            $busqueda = $request->busqueda;
+            $consulta->where(function ($q) use ($busqueda) {
+                $q->where('nombre_restaurante', 'like', "%{$busqueda}%")
+                  ->orWhereHas('ciudad', function ($qc) use ($busqueda) {
+                      $qc->where('nombre_ciudad', 'like', "%{$busqueda}%");
+                  });
+            });
+        }
+
         // filtro por ciudad
         if ($request->ciudad != '') {
             $consulta->where('id_ciudad', $request->ciudad);
@@ -35,6 +46,19 @@ class RestauranteController extends Controller
         // filtro por precio maximo
         if ($request->precio_max != '') {
             $consulta->where('precio_restaurante', '<=', $request->precio_max);
+        }
+
+        // filtro por rango de precio (pill select)
+        if ($request->precio_rango != '') {
+            $rango = $request->precio_rango;
+            if ($rango === '100+') {
+                $consulta->where('precio_restaurante', '>=', 100);
+            } else {
+                $partes = explode('-', $rango);
+                if (count($partes) === 2) {
+                    $consulta->whereBetween('precio_restaurante', [(int)$partes[0], (int)$partes[1]]);
+                }
+            }
         }
 
         // filtro por valoracion minima
