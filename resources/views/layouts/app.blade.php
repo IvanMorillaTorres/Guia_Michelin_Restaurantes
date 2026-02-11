@@ -25,12 +25,25 @@
                 <div class="cabecera-derecha">
                     <nav class="nav-principal">
                         <a href="{{ route('restaurantes.index') }}" class="activo">Restaurantes</a>
-                        <a href="#">Hoteles</a>
-                        <a href="#">Magazine</a>
-                        <a href="#">Favoritos</a>
                     </nav>
                     <div class="cabecera-acciones">
-                        <a href="#" class="icono-usuario" title="Mi cuenta"><i class="bi bi-person-circle"></i></a>
+                        @auth
+                            @if(Auth::user()->id_rol == 1)
+                                <a href="{{ route('admin.restaurantes.index') }}" class="btn-panel-admin" title="Panel Admin">
+                                    <i class="bi bi-gear"></i> Admin
+                                </a>
+                            @endif
+                            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="icono-menu" title="Cerrar sesión">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                </button>
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}" class="icono-usuario" title="Iniciar sesión">
+                                <i class="bi bi-person-circle"></i>
+                            </a>
+                        @endauth
                         <button class="icono-menu" title="Menú"><i class="bi bi-list"></i></button>
                     </div>
                 </div>
