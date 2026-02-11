@@ -18,7 +18,7 @@ class AdminSeeder extends Seeder
                 'apellido2' => '',
                 'nombre_del_atributo' => 'admin',
                 'email' => 'admin@michelin.com',
-                'password_hash' => Hash::make('admin123'),
+                'password_hash' => Hash::make('qazQAZ123'),
                 'telefono' => '600000000',
                 'nacimiento' => '1990-01-01',
                 'estado' => 'activo',
