@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
             CiudadSeeder::class,
             EstiloSeeder::class,
             RestauranteSeeder::class,
-            AdminSeeder::class,
         ]);
     }
 }

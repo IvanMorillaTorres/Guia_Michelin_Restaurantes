@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Rol;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class RolSeeder extends Seeder
 {
@@ -17,6 +18,7 @@ class RolSeeder extends Seeder
         ];
 
         foreach ($roles as $rol) {
+            $rol['slug'] = Str::slug($rol['nombre']);
             Rol::create($rol);
         }
     }
