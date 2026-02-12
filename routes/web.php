@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 // --- autenticacion (publica) ---
 Route::get('/login', [AuthController::class, 'mostrarLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/registro', [AuthController::class, 'mostrarRegistro'])->name('registro');
+Route::post('/registro', [AuthController::class, 'registro']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // --- rutas protegidas (requieren login) ---

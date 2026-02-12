@@ -96,21 +96,21 @@
         <tbody>
             @forelse($restaurantes as $restaurante)
                 <tr>
-                    <td>{{ $restaurante->id_restaurante }}</td>
-                    <td>
+                    <td data-label="ID">{{ $restaurante->id_restaurante }}</td>
+                    <td data-label="Imagen">
                         @if($restaurante->imagenPrincipal)
                             <img src="{{ $restaurante->imagenPrincipal->url }}" alt="" class="admin-miniatura">
                         @else
                             <span class="admin-sin-imagen">🍽️</span>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Nombre">
                         <strong>{{ $restaurante->nombre_restaurante }}</strong>
                         <br><small class="texto-gris">{{ $restaurante->slug }}</small>
                     </td>
-                    <td>{{ $restaurante->ciudad->nombre_ciudad ?? '—' }}</td>
-                    <td>{{ $restaurante->precio_restaurante ? number_format($restaurante->precio_restaurante, 0) . '€' : '—' }}</td>
-                    <td>
+                    <td data-label="Ciudad">{{ $restaurante->ciudad->nombre_ciudad ?? '—' }}</td>
+                    <td data-label="Precio">{{ $restaurante->precio_restaurante ? number_format($restaurante->precio_restaurante, 0) . '€' : '—' }}</td>
+                    <td data-label="Valoración">
                         @if($restaurante->valoracion_restaurante)
                             <span class="admin-valoracion">
                                 <i class="bi bi-star-fill"></i> {{ number_format($restaurante->valoracion_restaurante, 1) }}
@@ -119,12 +119,12 @@
                             —
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Estilos">
                         @foreach($restaurante->estilos as $estilo)
                             <span class="admin-etiqueta">{{ $estilo->nombre_estilo }}</span>
                         @endforeach
                     </td>
-                    <td class="admin-acciones">
+                    <td data-label="Acciones" class="admin-acciones">
                         <a href="{{ route('admin.restaurantes.editar', $restaurante->id_restaurante) }}" class="btn-admin-editar" title="Editar">
                             <i class="bi bi-pencil"></i>
                         </a>

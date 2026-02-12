@@ -9,6 +9,12 @@
             <h2>Iniciar sesión</h2>
             <p class="subtitulo-login">Accede a tu cuenta de la Guía MICHELIN</p>
 
+            @if(session('registro_exitoso'))
+                <div class="alerta-exito">
+                    <p><i class="bi bi-check-circle"></i> {{ session('registro_exitoso') }}</p>
+                </div>
+            @endif
+
             @if($errors->any())
                 <div class="alerta-error">
                     @foreach($errors->all() as $error)
@@ -31,6 +37,10 @@
                     <i class="bi bi-box-arrow-in-right"></i> Entrar
                 </button>
             </form>
+
+            <div class="enlace-auth">
+                ¿No tienes cuenta? <a href="{{ route('registro') }}">Regístrate aquí</a>
+            </div>
         </div>
     </div>
 </div>
