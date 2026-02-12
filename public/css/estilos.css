@@ -1154,7 +1154,7 @@ img {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    background: var(--texto-oscuro);
+    background: var(--oscuro-michelin);
     color: white;
     padding: 6px 14px;
     border-radius: 6px;
@@ -1165,7 +1165,8 @@ img {
 }
 
 .btn-panel-admin:hover {
-    background: #444;
+    background: var(--oscuro-michelin);
+    filter: brightness(1.2);
     color: white;
 }
 
@@ -1240,7 +1241,7 @@ img {
 .btn-login {
     width: 100%;
     padding: 12px;
-    background: var(--texto-oscuro);
+    background: var(--oscuro-michelin);
     color: white;
     border: none;
     border-radius: 8px;
@@ -1253,7 +1254,8 @@ img {
 }
 
 .btn-login:hover {
-    background: #444;
+    background: var(--oscuro-michelin);
+    filter: brightness(1.2);
 }
 
 /* Enlace entre login y registro */
