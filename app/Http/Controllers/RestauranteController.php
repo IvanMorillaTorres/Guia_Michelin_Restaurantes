@@ -13,7 +13,7 @@ class RestauranteController extends Controller
     public function index(Request $request)
     {
         // empezamos la consulta cargando las relaciones
-        $consulta = Restaurante::with(['ciudad', 'estilos', 'imagenPrincipal']);
+        $consulta = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenPrincipal']);
 
         // busqueda por texto (nombre de restaurante o ciudad)
         if ($request->busqueda != '') {
@@ -94,12 +94,12 @@ class RestauranteController extends Controller
     public function mostrar($slug)
     {
         // buscar el restaurante por su slug
-        $restaurante = Restaurante::with(['ciudad', 'estilos', 'imagenes'])
+        $restaurante = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenes'])
             ->where('slug', $slug)
             ->firstOrFail();
 
         // buscar restaurantes parecidos de la misma ciudad
-        $parecidos = Restaurante::with(['ciudad', 'estilos', 'imagenPrincipal'])
+        $parecidos = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenPrincipal'])
             ->where('id_restaurante', '!=', $restaurante->id_restaurante)
             ->where('id_ciudad', $restaurante->id_ciudad)
             ->limit(4)

@@ -96,6 +96,20 @@
                     </div>
                 @endif
 
+                @if($restaurante->ciudad && $restaurante->ciudad->comunidad)
+                    <div class="info-elemento">
+                        <strong>Comunidad</strong>
+                        <p>{{ $restaurante->ciudad->comunidad->nombre_comunidad }}</p>
+                    </div>
+                @endif
+
+                @if($restaurante->ciudad && $restaurante->ciudad->comunidad && $restaurante->ciudad->comunidad->pais)
+                    <div class="info-elemento">
+                        <strong>País</strong>
+                        <p>{{ $restaurante->ciudad->comunidad->pais->nombre }}</p>
+                    </div>
+                @endif
+
                 @if($restaurante->telefono_restaurante)
                     <div class="info-elemento">
                         <strong><i class="bi bi-telephone-fill"></i> Teléfono</strong>
@@ -123,7 +137,11 @@
                 </div>
                 <iframe
                     class="mapa-detalle"
-                    src="https://www.google.com/maps?q={{ urlencode($restaurante->nombre_restaurante . ' restaurante ' . ($restaurante->ciudad->nombre_ciudad ?? '')) }}&output=embed"
+                    @if(!empty($restaurante->latitud) && !empty($restaurante->longitud))
+                        src="https://www.google.com/maps?q={{ $restaurante->latitud }},{{ $restaurante->longitud }}&output=embed"
+                    @else
+                        src="https://www.google.com/maps?q={{ urlencode($restaurante->nombre_restaurante . ' restaurante ' . ($restaurante->ciudad->nombre_ciudad ?? '')) }}&output=embed"
+                    @endif
                     allowfullscreen
                     loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade">

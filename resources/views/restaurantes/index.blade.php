@@ -138,6 +138,9 @@
                                     <h3>{{ $restaurante->nombre_restaurante }}</h3>
                                     <p class="tarjeta-ubicacion">
                                         {{ $restaurante->ciudad->nombre_ciudad ?? 'Sin ciudad' }}
+                                        @if($restaurante->ciudad && $restaurante->ciudad->comunidad)
+                                            · {{ $restaurante->ciudad->comunidad->nombre_comunidad }}
+                                        @endif
                                     </p>
                                     <div class="tarjeta-linea">
                                         @if($restaurante->precio_restaurante)
