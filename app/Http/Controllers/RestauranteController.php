@@ -34,10 +34,23 @@ class RestauranteController extends Controller
         }
 
         // filtro por estilos de cocina
-        if ($request->has('estilos') && is_array($request->estilos)) {
-            $consulta->whereHas('estilos', function ($q) use ($request) {
-                $q->whereIn('estilos.id_estilo', $request->estilos);
-            });
+        // Ojo: el formulario usa "estilos[]" aunque sea un select simple, y puede venir [''].
+        // Normalizamos para que no filtre cuando está vacío.
+        $estilosSeleccionados = $request->input('estilos');
+        if (!empty($estilosSeleccionados)) {
+            if (!is_array($estilosSeleccionados)) {
+                $estilosSeleccionados = [$estilosSeleccionados];
+            }
+
+            $estilosSeleccionados = array_values(array_filter($estilosSeleccionados, function ($valor) {
+                return $valor !== null && $valor !== '';
+            }));
+
+            if (!empty($estilosSeleccionados)) {
+                $consulta->whereHas('estilos', function ($q) use ($estilosSeleccionados) {
+                    $q->whereIn('estilos.id_estilo', $estilosSeleccionados);
+                });
+            }
         }
 
         // filtro por precio minimo
