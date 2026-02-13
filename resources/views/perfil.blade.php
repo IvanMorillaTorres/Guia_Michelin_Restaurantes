@@ -41,11 +41,13 @@
                                     value="{{ old('nombre', $usuario->nombre) }}"
                                     required
                                     maxlength="255"
+                                    data-msg-required="El nombre es obligatorio."
+                                    data-msg-invalid="El nombre no puede contener números."
                                 >
                                 @error('nombre')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @else
-                                    <div class="invalid-feedback">El nombre es obligatorio.</div>
+                                    <div class="invalid-feedback js-invalid-feedback">El nombre es obligatorio.</div>
                                 @enderror
                             </div>
 
@@ -58,11 +60,13 @@
                                     value="{{ old('apellido1', $usuario->apellido1) }}"
                                     required
                                     maxlength="255"
+                                    data-msg-required="El primer apellido es obligatorio."
+                                    data-msg-invalid="El apellido no puede contener números."
                                 >
                                 @error('apellido1')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @else
-                                    <div class="invalid-feedback">El primer apellido es obligatorio.</div>
+                                    <div class="invalid-feedback js-invalid-feedback">El primer apellido es obligatorio.</div>
                                 @enderror
                             </div>
 
@@ -74,9 +78,12 @@
                                     class="form-control @error('apellido2') is-invalid @enderror"
                                     value="{{ old('apellido2', $usuario->apellido2) }}"
                                     maxlength="255"
+                                    data-msg-invalid="El apellido no puede contener números."
                                 >
                                 @error('apellido2')
                                     <div class="invalid-feedback">{{ $message }}</div>
+                                @else
+                                    <div class="invalid-feedback js-invalid-feedback">Apellido no válido.</div>
                                 @enderror
                             </div>
 
@@ -88,14 +95,15 @@
                                     name="telefono"
                                     class="form-control @error('telefono') is-invalid @enderror"
                                     value="{{ old('telefono', $usuario->telefono) }}"
-                                    maxlength="20"
+                                    maxlength="9"
                                     inputmode="tel"
-                                    placeholder="+34 600 000 000"
+                                    placeholder="600000000"
+                                    data-msg-invalid="El teléfono debe tener exactamente 9 números (o estar vacío)."
                                 >
                                 @error('telefono')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @else
-                                    <div class="invalid-feedback">Teléfono no válido.</div>
+                                    <div class="invalid-feedback js-invalid-feedback">Teléfono no válido.</div>
                                 @enderror
                             </div>
 
@@ -108,11 +116,13 @@
                                     value="{{ old('email', $usuario->email) }}"
                                     required
                                     maxlength="255"
+                                    data-msg-required="El correo es obligatorio."
+                                    data-msg-invalid="Introduce un email válido."
                                 >
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @else
-                                    <div class="invalid-feedback">Introduce un email válido.</div>
+                                    <div class="invalid-feedback js-invalid-feedback">Introduce un email válido.</div>
                                 @enderror
                             </div>
 
@@ -124,11 +134,12 @@
                                     name="nacimiento"
                                     class="form-control @error('nacimiento') is-invalid @enderror"
                                     value="{{ old('nacimiento', optional($usuario->nacimiento)->format('Y-m-d')) }}"
+                                    data-msg-invalid="La fecha de nacimiento no puede ser futura."
                                 >
                                 @error('nacimiento')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @else
-                                    <div class="invalid-feedback">La fecha de nacimiento no puede ser futura.</div>
+                                    <div class="invalid-feedback js-invalid-feedback">La fecha de nacimiento no puede ser futura.</div>
                                 @enderror
                             </div>
 
@@ -271,6 +282,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (!field.checkValidity()) {
+            const feedback = field.parentElement ? field.parentElement.querySelector('.js-invalid-feedback') : null;
+            if (feedback) {
+                const msgRequired = field.dataset.msgRequired || 'Este campo es obligatorio.';
+                const msgInvalid = field.dataset.msgInvalid || 'Valor no válido.';
+
+                if (field.validity && field.validity.valueMissing) {
+                    feedback.textContent = msgRequired;
+                } else if (field.validity && (field.validity.typeMismatch || field.validity.patternMismatch || field.validity.customError)) {
+                    feedback.textContent = msgInvalid;
+                } else {
+                    feedback.textContent = msgInvalid;
+                }
+            }
             field.classList.add('is-invalid');
             field.classList.remove('is-valid');
         } else {
@@ -281,7 +305,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const forms = document.querySelectorAll('.needs-validation');
 
+    const nombreRegex = /^[\p{L}]+(?:[\s\-'][\p{L}]+)*$/u;
+    const telefonoRegex = /^\d{9}$/;
+
     forms.forEach((form) => {
+        // Validaciones custom por campo
+        const hookNombreLike = (selector, allowEmpty = false) => {
+            const field = form.querySelector(selector);
+            if (!field) return;
+
+            const validate = () => {
+                const value = (field.value || '').trim();
+                if (!value && allowEmpty) {
+                    field.setCustomValidity('');
+                    return;
+                }
+                if (!value && !allowEmpty) {
+                    field.setCustomValidity('');
+                    return;
+                }
+                field.setCustomValidity(nombreRegex.test(value) ? '' : 'Nombre/apellido no válido');
+            };
+
+            field.addEventListener('input', () => {
+                validate();
+                validateField(field);
+            });
+            field.addEventListener('blur', () => {
+                validate();
+                validateField(field);
+            });
+            validate();
+        };
+
+        hookNombreLike('input[name="nombre"]');
+        hookNombreLike('input[name="apellido1"]');
+        hookNombreLike('input[name="apellido2"]', true);
+
         form.addEventListener('submit', function (event) {
             if (!form.checkValidity()) {
                 event.preventDefault();
@@ -307,7 +367,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const telefono = document.getElementById('telefono');
     if (telefono) {
-        const telefonoRegex = /^[0-9+\s()\-]*$/;
         const validateTelefono = () => {
             const value = (telefono.value || '').trim();
             if (!value) {

@@ -26,24 +26,27 @@ class PerfilController extends Controller
         $usuario = Auth::user();
 
         $datos = $request->validate([
-            'nombre' => ['required', 'string', 'max:255'],
-            'apellido1' => ['required', 'string', 'max:255'],
-            'apellido2' => ['nullable', 'string', 'max:255'],
+            'nombre' => ['required', 'string', 'max:255', 'regex:/^[\p{L}]+(?:[\s\-\'][\p{L}]+)*$/u'],
+            'apellido1' => ['required', 'string', 'max:255', 'regex:/^[\p{L}]+(?:[\s\-\'][\p{L}]+)*$/u'],
+            'apellido2' => ['nullable', 'string', 'max:255', 'regex:/^[\p{L}]+(?:[\s\-\'][\p{L}]+)*$/u'],
             'email' => [
                 'required',
                 'email',
                 'max:255',
                 Rule::unique('users', 'email')->ignore($usuario->id_users, 'id_users'),
             ],
-            'telefono' => ['nullable', 'string', 'max:20', 'regex:/^[0-9+\s()\-]*$/'],
+            'telefono' => ['nullable', 'regex:/^\d{9}$/'],
             'nacimiento' => ['nullable', 'date', 'before:today'],
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
             'apellido1.required' => 'El primer apellido es obligatorio.',
+            'nombre.regex' => 'El nombre no puede contener números y solo admite letras y espacios.',
+            'apellido1.regex' => 'El apellido no puede contener números y solo admite letras y espacios.',
+            'apellido2.regex' => 'El apellido no puede contener números y solo admite letras y espacios.',
             'email.required' => 'El correo es obligatorio.',
             'email.email' => 'El correo no tiene un formato válido.',
             'email.unique' => 'Este correo ya está registrado.',
-            'telefono.regex' => 'El teléfono solo puede contener números, espacios y símbolos + ( ) -.',
+            'telefono.regex' => 'El teléfono debe tener exactamente 9 números (o estar vacío).',
             'nacimiento.before' => 'La fecha de nacimiento no puede ser futura.',
         ]);
 
