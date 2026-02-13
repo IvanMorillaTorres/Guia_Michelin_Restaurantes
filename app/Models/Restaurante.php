@@ -71,4 +71,10 @@ class Restaurante extends Model
     {
         return $this->hasOne(Imagen::class, 'id_restaurante', 'id_restaurante')->oldest('id_imagenes');
     }
+
+    // un restaurante tiene muchas valoraciones
+    public function valoraciones()
+    {
+        return $this->hasMany(Valoracion::class, 'id_restaurante', 'id_restaurante');
+    }
 }

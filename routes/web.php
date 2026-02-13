@@ -23,6 +23,9 @@ Route::middleware('auth')->group(function () {
 
     // ver un restaurante en detalle
     Route::get('/restaurante/{slug}', [RestauranteController::class, 'mostrar'])->name('restaurantes.mostrar');
+
+    // valorar un restaurante
+    Route::post('/restaurante/{slug}/valorar', [RestauranteController::class, 'valorar'])->name('restaurantes.valorar');
 });
 
 // --- panel de administracion (solo admin) ---

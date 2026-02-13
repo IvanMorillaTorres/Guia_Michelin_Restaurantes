@@ -465,7 +465,6 @@ img {
 
 .barra-filtros {
     display: none;
-}
     position: sticky;
     top: 100px;
     height: fit-content;
@@ -848,6 +847,30 @@ img {
 .texto-valoracion {
     font-size: 14px;
     color: var(--texto-claro);
+}
+
+/* Valoracion interactiva (click en estrellas) */
+.valoracion-interactiva {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.estrella-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.estrella-btn .bi {
+    font-size: 24px;
+    color: var(--dorado);
+}
+
+.estrella-btn:focus {
+    outline: none;
 }
 
 .detalle-seccion {

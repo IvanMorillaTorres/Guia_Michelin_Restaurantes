@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Restaurante;
 use App\Models\Ciudad;
 use App\Models\Estilo;
+use App\Models\Valoracion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RestauranteController extends Controller
 {
@@ -95,8 +97,16 @@ class RestauranteController extends Controller
     {
         // buscar el restaurante por su slug
         $restaurante = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenes'])
+            ->withCount('valoraciones')
             ->where('slug', $slug)
             ->firstOrFail();
+
+        $valoracionUsuario = null;
+        if (Auth::check()) {
+            $valoracionUsuario = $restaurante->valoraciones()
+                ->where('id_users', Auth::id())
+                ->value('puntuacion');
+        }
 
         // buscar restaurantes parecidos de la misma ciudad
         $parecidos = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenPrincipal'])
@@ -106,6 +116,47 @@ class RestauranteController extends Controller
             ->get();
 
         // devolver la vista
-        return view('restaurantes.mostrar', compact('restaurante', 'parecidos'));
+        return view('restaurantes.mostrar', compact('restaurante', 'parecidos', 'valoracionUsuario'));
+    }
+
+    // guardar/actualizar una valoracion del usuario
+    public function valorar(Request $request, $slug)
+    {
+        $datos = $request->validate([
+            'puntuacion' => 'required|integer|min:1|max:5',
+        ]);
+
+        $restaurante = Restaurante::where('slug', $slug)->firstOrFail();
+
+        Valoracion::updateOrCreate(
+            [
+                'id_restaurante' => $restaurante->id_restaurante,
+                'id_users' => Auth::id(),
+            ],
+            [
+                'puntuacion' => $datos['puntuacion'],
+            ]
+        );
+
+        // recalcular media y guardarla en restaurantes.valoracion_restaurante
+        $media = Valoracion::where('id_restaurante', $restaurante->id_restaurante)->avg('puntuacion');
+        $restaurante->valoracion_restaurante = round((float) $media, 1);
+        $restaurante->save();
+
+        $count = Valoracion::where('id_restaurante', $restaurante->id_restaurante)->count();
+
+        // respuesta JSON para AJAX (sin recargar)
+        if ($request->expectsJson()) {
+            return response()->json([
+                'ok' => true,
+                'media' => (float) $restaurante->valoracion_restaurante,
+                'count' => $count,
+                'user' => (int) $datos['puntuacion'],
+            ]);
+        }
+
+        return redirect()
+            ->route('restaurantes.mostrar', $restaurante->slug)
+            ->with('valoracion_ok', '¡Gracias! Tu valoración se ha guardado.');
     }
 }

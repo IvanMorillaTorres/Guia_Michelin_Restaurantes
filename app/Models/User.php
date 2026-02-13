@@ -40,6 +40,12 @@ class User extends Authenticatable
         return $this->belongsTo(Rol::class, 'id_rol', 'id_rol');
     }
 
+    // un usuario tiene muchas valoraciones
+    public function valoraciones()
+    {
+        return $this->hasMany(Valoracion::class, 'id_users', 'id_users');
+    }
+
     /**
      * Obtener el nombre de la columna de contraseña
      */
