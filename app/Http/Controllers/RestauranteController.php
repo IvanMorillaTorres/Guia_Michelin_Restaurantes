@@ -97,12 +97,21 @@ class RestauranteController extends Controller
         // paginar de 12 en 12
         $restaurantes = $consulta->paginate(12)->withQueryString();
 
+        // ids de restaurantes guardados por el usuario (para pintar el corazon)
+        $guardadosIds = [];
+        if (Auth::check()) {
+            $guardadosIds = Auth::user()
+                ->restaurantesGuardados()
+                ->pluck('restaurantes.id_restaurante')
+                ->toArray();
+        }
+
         // sacar datos para los filtros del formulario
         $ciudades = Ciudad::orderBy('nombre_ciudad')->get();
         $estilos = Estilo::orderBy('nombre_estilo')->get();
 
         // devolver la vista con los datos
-        return view('restaurantes.index', compact('restaurantes', 'ciudades', 'estilos'));
+        return view('restaurantes.index', compact('restaurantes', 'ciudades', 'estilos', 'guardadosIds'));
     }
 
     // mostrar un restaurante en detalle
@@ -121,6 +130,14 @@ class RestauranteController extends Controller
                 ->value('puntuacion');
         }
 
+        $estaGuardado = false;
+        if (Auth::check()) {
+            $estaGuardado = Auth::user()
+                ->restaurantesGuardados()
+                ->where('restaurantes.id_restaurante', $restaurante->id_restaurante)
+                ->exists();
+        }
+
         // buscar restaurantes parecidos de la misma ciudad
         $parecidos = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenPrincipal'])
             ->where('id_restaurante', '!=', $restaurante->id_restaurante)
@@ -129,7 +146,33 @@ class RestauranteController extends Controller
             ->get();
 
         // devolver la vista
-        return view('restaurantes.mostrar', compact('restaurante', 'parecidos', 'valoracionUsuario'));
+        return view('restaurantes.mostrar', compact('restaurante', 'parecidos', 'valoracionUsuario', 'estaGuardado'));
+    }
+
+    // guardar/quitar un restaurante de guardados
+    public function toggleGuardado(Request $request, $slug)
+    {
+        $restaurante = Restaurante::where('slug', $slug)->firstOrFail();
+        $usuario = Auth::user();
+
+        $ya = $usuario->restaurantesGuardados()
+            ->where('restaurantes.id_restaurante', $restaurante->id_restaurante)
+            ->exists();
+
+        if ($ya) {
+            $usuario->restaurantesGuardados()->detach($restaurante->id_restaurante);
+        } else {
+            $usuario->restaurantesGuardados()->attach($restaurante->id_restaurante);
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'ok' => true,
+                'guardado' => !$ya,
+            ]);
+        }
+
+        return back();
     }
 
     // guardar/actualizar una valoracion del usuario

@@ -164,6 +164,46 @@
                 </script>
             </div>
 
+            <!-- Guardar -->
+            <div class="detalle-seccion">
+                <h2>Guardar</h2>
+                <button type="button" id="btn-guardar-rest" class="btn btn-outline-danger">
+                    <i id="icono-guardar" class="bi {{ ($estaGuardado ?? false) ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                    <span id="texto-guardar">{{ ($estaGuardado ?? false) ? 'Guardado' : 'Guardar' }}</span>
+                </button>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const btn = document.getElementById('btn-guardar-rest');
+                    const icono = document.getElementById('icono-guardar');
+                    const texto = document.getElementById('texto-guardar');
+                    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+                    if (!btn || !token) return;
+
+                    btn.addEventListener('click', async function () {
+                        try {
+                            const res = await fetch(`{{ route('restaurantes.guardar', $restaurante->slug) }}` , {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': token,
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                }
+                            });
+                            const data = await res.json();
+                            if (!data || data.ok !== true) return;
+
+                            if (icono) icono.className = data.guardado ? 'bi bi-heart-fill' : 'bi bi-heart';
+                            if (texto) texto.textContent = data.guardado ? 'Guardado' : 'Guardar';
+                        } catch (e) {
+                            // nivel AJAX muy simple: si falla, no hacemos nada
+                        }
+                    });
+                });
+            </script>
+
             <!-- Descripcion -->
             @if($restaurante->descripcion_restaurante)
                 <div class="detalle-seccion">

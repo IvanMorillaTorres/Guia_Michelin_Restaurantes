@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('titulo', 'Guía MICHELIN - Restaurantes')</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -31,6 +32,9 @@
                             <i class="bi bi-moon-stars"></i>
                         </button>
                         @auth
+                            <a href="{{ route('perfil') }}" class="icono-usuario" title="Perfil">
+                                <i class="bi bi-person-circle"></i>
+                            </a>
                             @if(Auth::user()->id_rol == 1)
                                 <a href="{{ route('admin.restaurantes.index') }}" class="btn-panel-admin" title="Panel Admin">
                                     <i class="bi bi-gear"></i> Admin
@@ -47,7 +51,6 @@
                                 <i class="bi bi-person-circle"></i>
                             </a>
                         @endauth
-                        <button class="icono-menu" title="Menú"><i class="bi bi-list"></i></button>
                     </div>
                 </div>
             </div>

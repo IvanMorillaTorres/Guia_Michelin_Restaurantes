@@ -46,6 +46,19 @@ class User extends Authenticatable
         return $this->hasMany(Valoracion::class, 'id_users', 'id_users');
     }
 
+    // restaurantes guardados (favoritos)
+    public function restaurantesGuardados()
+    {
+        return $this->belongsToMany(
+            Restaurante::class,
+            'restaurantes_guardados',
+            'id_users',
+            'id_restaurante',
+            'id_users',
+            'id_restaurante'
+        )->withTimestamps();
+    }
+
     /**
      * Obtener el nombre de la columna de contraseña
      */

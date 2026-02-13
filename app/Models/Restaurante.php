@@ -77,4 +77,17 @@ class Restaurante extends Model
     {
         return $this->hasMany(Valoracion::class, 'id_restaurante', 'id_restaurante');
     }
+
+    // usuarios que lo tienen guardado
+    public function guardadoPorUsuarios()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'restaurantes_guardados',
+            'id_restaurante',
+            'id_users',
+            'id_restaurante',
+            'id_users'
+        )->withTimestamps();
+    }
 }

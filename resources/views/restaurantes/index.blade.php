@@ -123,7 +123,14 @@
                                 <div class="tarjeta-imagen">
                                     <!-- Iconos overlay -->
                                     <div class="tarjeta-acciones" aria-hidden="true">
-                                        <span class="accion-icono"><i class="bi bi-heart"></i></span>
+                                        <button
+                                            type="button"
+                                            class="accion-icono btn-guardar"
+                                            data-slug="{{ $restaurante->slug }}"
+                                            data-guardado="{{ in_array($restaurante->id_restaurante, $guardadosIds ?? []) ? '1' : '0' }}"
+                                            aria-label="Guardar">
+                                            <i class="bi {{ in_array($restaurante->id_restaurante, $guardadosIds ?? []) ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                                        </button>
                                         <span class="accion-icono"><i class="bi bi-check-circle"></i></span>
                                         <span class="accion-icono"><i class="bi bi-box-arrow-up-right"></i></span>
                                     </div>
@@ -176,6 +183,41 @@
                 </div>
             @endif
         </section>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                document.querySelectorAll('.btn-guardar').forEach((btn) => {
+                    btn.addEventListener('click', async function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        const slug = this.getAttribute('data-slug');
+                        if (!slug || !token) return;
+
+                        try {
+                            const res = await fetch(`/restaurante/${slug}/guardar`, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': token,
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                }
+                            });
+                            const data = await res.json();
+                            if (!data || data.ok !== true) return;
+
+                            const icon = this.querySelector('i');
+                            if (icon) {
+                                icon.className = data.guardado ? 'bi bi-heart-fill' : 'bi bi-heart';
+                            }
+                        } catch (err) {
+                            // si falla, no hacemos nada (nivel AJAX muy simple)
+                        }
+                    });
+                });
+            });
+        </script>
 
     </div>
 </div>
