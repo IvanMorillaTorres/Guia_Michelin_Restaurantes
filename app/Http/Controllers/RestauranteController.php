@@ -164,9 +164,33 @@ class RestauranteController extends Controller
 
         $restaurante = Restaurante::where('slug', $slug)->firstOrFail();
 
+        // No se puede comentar sin haber valorado antes
+        $puntuacion = Valoracion::where('id_restaurante', $restaurante->id_restaurante)
+            ->where('id_users', Auth::id())
+            ->value('puntuacion');
+
+        if (empty($puntuacion)) {
+            return redirect()
+                ->route('restaurantes.mostrar', $restaurante->slug)
+                ->withErrors(['texto' => 'Debes dejar una valoración (estrellas) antes de comentar.'])
+                ->withInput();
+        }
+
+        // Solo 1 comentario por restaurante y usuario
+        $yaComentado = Comentario::where('id_restaurante', $restaurante->id_restaurante)
+            ->where('id_users', Auth::id())
+            ->exists();
+
+        if ($yaComentado) {
+            return redirect()
+                ->route('restaurantes.mostrar', $restaurante->slug)
+                ->withErrors(['texto' => 'Solo puedes comentar una vez en este restaurante.']);
+        }
+
         Comentario::create([
             'id_restaurante' => $restaurante->id_restaurante,
             'id_users' => Auth::id(),
+            'puntuacion' => (int) $puntuacion,
             'texto' => $datos['texto'],
         ]);
 

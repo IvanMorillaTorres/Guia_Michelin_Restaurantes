@@ -200,48 +200,6 @@
                 });
             </script>
 
-            <!-- Comentarios -->
-            <div class="detalle-seccion">
-                <h2>Comentarios</h2>
-
-                @if(session('comentario_ok'))
-                    <div class="alert alert-success">{{ session('comentario_ok') }}</div>
-                @endif
-
-                <form method="POST" action="{{ route('restaurantes.comentar', $restaurante->slug) }}">
-                    @csrf
-                    <div class="mb-2">
-                        <textarea
-                            name="texto"
-                            class="form-control"
-                            rows="3"
-                            placeholder="Escribe tu comentario...">{{ old('texto') }}</textarea>
-                        @error('texto')
-                            <div class="text-danger mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <button type="submit" class="btn btn-danger">Publicar</button>
-                </form>
-
-                <div style="margin-top: 18px;">
-                    @if(($comentarios ?? collect())->isEmpty())
-                        <p class="texto-valoracion">Aún no hay comentarios.</p>
-                    @else
-                        @foreach($comentarios as $comentario)
-                            <div class="info-elemento" style="border-bottom: 1px solid var(--color-borde); padding-bottom: 12px; margin-bottom: 12px;">
-                                <strong style="text-transform:none; letter-spacing:0; font-size: 13px;">
-                                    {{ $comentario->usuario->nombre ?? 'Usuario' }}
-                                    <span style="color: var(--texto-claro); font-weight: 400; margin-left: 8px;">
-                                        {{ optional($comentario->created_at)->format('d/m/Y H:i') }}
-                                    </span>
-                                </strong>
-                                <p style="margin:0;">{{ $comentario->texto }}</p>
-                            </div>
-                        @endforeach
-                    @endif
-                </div>
-            </div>
-
             <!-- Descripcion -->
             @if($restaurante->descripcion_restaurante)
                 <div class="detalle-seccion">
@@ -384,5 +342,60 @@
             </div>
         </section>
     @endif
+
+    <!-- Comentarios (al final para que no alargue la ficha) -->
+    <section class="detalle-seccion">
+        <h2>Comentarios ({{ ($comentarios ?? collect())->count() }})</h2>
+
+        @if(session('comentario_ok'))
+            <div class="alert alert-success">{{ session('comentario_ok') }}</div>
+        @endif
+
+        <p class="texto-valoracion" style="margin-bottom: 10px;">
+            Para comentar, primero deja tu valoración con estrellas.
+        </p>
+
+        <form method="POST" action="{{ route('restaurantes.comentar', $restaurante->slug) }}">
+            @csrf
+            <div class="mb-2">
+                <textarea
+                    name="texto"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Escribe tu comentario...">{{ old('texto') }}</textarea>
+                @error('texto')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                @enderror
+            </div>
+            <button type="submit" class="btn btn-danger">Publicar</button>
+        </form>
+
+        <div class="comentarios-lista" style="margin-top: 18px;">
+            @if(($comentarios ?? collect())->isEmpty())
+                <p class="texto-valoracion">Aún no hay comentarios.</p>
+            @else
+                @foreach($comentarios as $comentario)
+                    <div class="comentario-item">
+                        <strong class="comentario-cabecera">
+                            {{ $comentario->usuario->nombre ?? 'Usuario' }}
+                            <span class="comentario-estrellas">
+                                @for($s = 1; $s <= 5; $s++)
+                                    @if($s <= (int)($comentario->puntuacion ?? 0))
+                                        <i class="bi bi-star-fill"></i>
+                                    @else
+                                        <i class="bi bi-star"></i>
+                                    @endif
+                                @endfor
+                            </span>
+                            <span class="comentario-fecha">
+                                {{ optional($comentario->created_at)->format('d/m/Y H:i') }}
+                            </span>
+                        </strong>
+                        <p class="comentario-texto">{{ $comentario->texto }}</p>
+                    </div>
+                @endforeach
+            @endif
+        </div>
+    </section>
 </div>
 @endsection

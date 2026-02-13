@@ -12,7 +12,12 @@ class Comentario extends Model
     protected $fillable = [
         'id_restaurante',
         'id_users',
+        'puntuacion',
         'texto',
+    ];
+
+    protected $casts = [
+        'puntuacion' => 'integer',
     ];
 
     public function restaurante()

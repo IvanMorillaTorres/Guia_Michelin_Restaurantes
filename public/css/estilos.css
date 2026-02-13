@@ -976,6 +976,58 @@ img {
     display: block;
 }
 
+/* ===== COMENTARIOS (DETALLE) ===== */
+.comentarios-lista {
+    max-height: 340px;
+    overflow-y: auto;
+    border: 1px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 14px;
+    background: white;
+}
+
+html[data-theme="dark"] .comentarios-lista {
+    background: var(--gris-claro);
+}
+
+.comentario-item {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.comentario-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.comentario-cabecera {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--texto-oscuro);
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.comentario-estrellas {
+    color: var(--dorado);
+}
+
+.comentario-fecha {
+    color: var(--texto-claro);
+    font-weight: 400;
+}
+
+.comentario-texto {
+    margin: 6px 0 0;
+    color: var(--texto-oscuro);
+}
+
 .info-elemento a:hover {
     text-decoration: underline;
 }
