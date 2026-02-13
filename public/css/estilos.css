@@ -1354,6 +1354,26 @@ html[data-theme="dark"] .comentarios-lista {
     box-sizing: border-box;
 }
 
+.campo-formulario input.is-invalid,
+.campo-formulario select.is-invalid,
+.campo-formulario textarea.is-invalid {
+    border-color: var(--rojo-michelin);
+}
+
+.campo-formulario input.is-valid,
+.campo-formulario select.is-valid,
+.campo-formulario textarea.is-valid {
+    border-color: var(--verde);
+}
+
+.campo-formulario .js-error {
+    display: none;
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--rojo-michelin);
+    font-weight: 600;
+}
+
 .campo-formulario input:focus,
 .campo-formulario select:focus,
 .campo-formulario textarea:focus {

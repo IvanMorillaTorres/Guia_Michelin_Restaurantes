@@ -69,16 +69,25 @@ class AdminRestauranteController extends Controller
     public function guardar(Request $request)
     {
         $datos = $request->validate([
-            'nombre_restaurante' => 'required|string|max:255',
-            'telefono_restaurante' => 'nullable|string|max:20',
+            'nombre_restaurante' => 'required|string|max:255|regex:/^(?!.*\\d)[\\p{L}][\\p{L}\\s\\-\\.&]*$/u',
+            'telefono_restaurante' => 'required|regex:/^\\d{9}$/',
             'precio_restaurante' => 'nullable|numeric|min:0',
             'descripcion_restaurante' => 'nullable|string',
             'valoracion_restaurante' => 'nullable|numeric|min:0|max:5',
-            'web_real_restaurante' => 'nullable|url|max:255',
+            'web_real_restaurante' => 'required|url|max:255',
             'id_ciudad' => 'required|exists:ciudades,id_ciudad',
-            'estilos' => 'nullable|array',
+            'estilos' => 'required|array|min:1',
             'estilos.*' => 'exists:estilos,id_estilo',
             'imagenes.*' => 'nullable|image|max:2048',
+        ], [
+            'nombre_restaurante.required' => 'El nombre del restaurante es obligatorio.',
+            'nombre_restaurante.regex' => 'El nombre del restaurante no puede contener números.',
+            'telefono_restaurante.required' => 'El teléfono es obligatorio.',
+            'telefono_restaurante.regex' => 'El teléfono debe tener exactamente 9 números.',
+            'web_real_restaurante.required' => 'La página web es obligatoria.',
+            'web_real_restaurante.url' => 'La página web debe ser una URL válida (ej. https://...).',
+            'estilos.required' => 'Debes seleccionar al menos 1 estilo de cocina.',
+            'estilos.min' => 'Debes seleccionar al menos 1 estilo de cocina.',
         ]);
 
         // crear el restaurante
@@ -129,16 +138,25 @@ class AdminRestauranteController extends Controller
         $restaurante = Restaurante::findOrFail($id);
 
         $datos = $request->validate([
-            'nombre_restaurante' => 'required|string|max:255',
-            'telefono_restaurante' => 'nullable|string|max:20',
+            'nombre_restaurante' => 'required|string|max:255|regex:/^(?!.*\\d)[\\p{L}][\\p{L}\\s\\-\\.&]*$/u',
+            'telefono_restaurante' => 'required|regex:/^\\d{9}$/',
             'precio_restaurante' => 'nullable|numeric|min:0',
             'descripcion_restaurante' => 'nullable|string',
             'valoracion_restaurante' => 'nullable|numeric|min:0|max:5',
-            'web_real_restaurante' => 'nullable|url|max:255',
+            'web_real_restaurante' => 'required|url|max:255',
             'id_ciudad' => 'required|exists:ciudades,id_ciudad',
-            'estilos' => 'nullable|array',
+            'estilos' => 'required|array|min:1',
             'estilos.*' => 'exists:estilos,id_estilo',
             'imagenes.*' => 'nullable|image|max:2048',
+        ], [
+            'nombre_restaurante.required' => 'El nombre del restaurante es obligatorio.',
+            'nombre_restaurante.regex' => 'El nombre del restaurante no puede contener números.',
+            'telefono_restaurante.required' => 'El teléfono es obligatorio.',
+            'telefono_restaurante.regex' => 'El teléfono debe tener exactamente 9 números.',
+            'web_real_restaurante.required' => 'La página web es obligatoria.',
+            'web_real_restaurante.url' => 'La página web debe ser una URL válida (ej. https://...).',
+            'estilos.required' => 'Debes seleccionar al menos 1 estilo de cocina.',
+            'estilos.min' => 'Debes seleccionar al menos 1 estilo de cocina.',
         ]);
 
         // actualizar datos del restaurante
