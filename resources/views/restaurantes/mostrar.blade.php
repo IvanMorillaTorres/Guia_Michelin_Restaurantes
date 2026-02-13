@@ -71,6 +71,22 @@
                 </div>
             @endif
 
+            {{-- Mapa con ubicacion (debajo de la descripcion) --}}
+            <div class="detalle-seccion">
+                <h2>Ubicación</h2>
+                <iframe
+                    class="mapa-detalle"
+                    @if(!empty($restaurante->latitud) && !empty($restaurante->longitud))
+                        src="https://www.google.com/maps?q={{ $restaurante->latitud }},{{ $restaurante->longitud }}&output=embed"
+                    @else
+                        src="https://www.google.com/maps?q={{ urlencode($restaurante->nombre_restaurante . ' restaurante ' . ($restaurante->ciudad->nombre_ciudad ?? '')) }}&output=embed"
+                    @endif
+                    allowfullscreen
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+
             <!-- Galeria de imagenes -->
             @if($restaurante->imagenes->count() > 1)
                 <div class="detalle-seccion">
@@ -130,22 +146,6 @@
                         <p class="precio-grande">{{ number_format($restaurante->precio_restaurante, 0) }}€</p>
                     </div>
                 @endif
-
-                {{-- Mapa con ubicacion --}}
-                <div class="info-elemento">
-                    <strong><i class="bi bi-map-fill"></i> Ubicación</strong>
-                </div>
-                <iframe
-                    class="mapa-detalle"
-                    @if(!empty($restaurante->latitud) && !empty($restaurante->longitud))
-                        src="https://www.google.com/maps?q={{ $restaurante->latitud }},{{ $restaurante->longitud }}&output=embed"
-                    @else
-                        src="https://www.google.com/maps?q={{ urlencode($restaurante->nombre_restaurante . ' restaurante ' . ($restaurante->ciudad->nombre_ciudad ?? '')) }}&output=embed"
-                    @endif
-                    allowfullscreen
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
             </div>
         </aside>
     </div>
