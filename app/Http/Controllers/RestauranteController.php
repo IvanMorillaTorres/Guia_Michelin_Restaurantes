@@ -6,6 +6,7 @@ use App\Models\Restaurante;
 use App\Models\Ciudad;
 use App\Models\Estilo;
 use App\Models\Valoracion;
+use App\Models\Comentario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -138,6 +139,11 @@ class RestauranteController extends Controller
                 ->exists();
         }
 
+        $comentarios = Comentario::with('usuario')
+            ->where('id_restaurante', $restaurante->id_restaurante)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         // buscar restaurantes parecidos de la misma ciudad
         $parecidos = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenPrincipal'])
             ->where('id_restaurante', '!=', $restaurante->id_restaurante)
@@ -146,7 +152,27 @@ class RestauranteController extends Controller
             ->get();
 
         // devolver la vista
-        return view('restaurantes.mostrar', compact('restaurante', 'parecidos', 'valoracionUsuario', 'estaGuardado'));
+        return view('restaurantes.mostrar', compact('restaurante', 'parecidos', 'valoracionUsuario', 'estaGuardado', 'comentarios'));
+    }
+
+    // guardar un comentario
+    public function comentar(Request $request, $slug)
+    {
+        $datos = $request->validate([
+            'texto' => 'required|string|min:2|max:1000',
+        ]);
+
+        $restaurante = Restaurante::where('slug', $slug)->firstOrFail();
+
+        Comentario::create([
+            'id_restaurante' => $restaurante->id_restaurante,
+            'id_users' => Auth::id(),
+            'texto' => $datos['texto'],
+        ]);
+
+        return redirect()
+            ->route('restaurantes.mostrar', $restaurante->slug)
+            ->with('comentario_ok', 'Comentario publicado.');
     }
 
     // guardar/quitar un restaurante de guardados

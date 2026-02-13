@@ -47,13 +47,7 @@
                 </div>
             </div>
 
-            <!-- Valoracion media (sin estrellas estaticas) -->
-            <div class="valoracion-grande">
-                <span class="texto-valoracion">
-                    Media: <span id="media-valoracion">{{ number_format($restaurante->valoracion_restaurante, 1) }}</span> / 5.0
-                    (<span id="recuento-valoraciones">{{ $restaurante->valoraciones_count ?? 0 }}</span> valoraciones)
-                </span>
-            </div>
+            <!-- (Quitamos la media y mostramos el recuento junto a "Tu valoración") -->
 
             <!-- Valorar -->
             <div class="detalle-seccion">
@@ -87,6 +81,10 @@
                                 Pulsa una estrella
                             @endif
                         </span>
+
+                        <span class="ms-2 texto-valoracion">
+                            (<span id="recuento-valoraciones">{{ $restaurante->valoraciones_count ?? 0 }}</span> valoraciones)
+                        </span>
                     </div>
 
                     @error('puntuacion')
@@ -99,7 +97,6 @@
                         const form = document.getElementById('form-valoracion');
                         const input = document.getElementById('input-puntuacion');
                         const textoTuNota = document.getElementById('texto-tu-nota');
-                        const mediaEl = document.getElementById('media-valoracion');
                         const recuentoEl = document.getElementById('recuento-valoraciones');
                         const lateralCountEl = document.getElementById('valoraciones-count');
 
@@ -147,7 +144,6 @@
                                     }
 
                                     if (textoTuNota) textoTuNota.textContent = `Tu nota: ${data.user}/5`;
-                                    if (mediaEl) mediaEl.textContent = Number(data.media).toFixed(1);
                                     if (recuentoEl) recuentoEl.textContent = String(data.count);
                                     if (lateralCountEl) lateralCountEl.textContent = String(data.count);
                                 } catch (e) {
@@ -203,6 +199,48 @@
                     });
                 });
             </script>
+
+            <!-- Comentarios -->
+            <div class="detalle-seccion">
+                <h2>Comentarios</h2>
+
+                @if(session('comentario_ok'))
+                    <div class="alert alert-success">{{ session('comentario_ok') }}</div>
+                @endif
+
+                <form method="POST" action="{{ route('restaurantes.comentar', $restaurante->slug) }}">
+                    @csrf
+                    <div class="mb-2">
+                        <textarea
+                            name="texto"
+                            class="form-control"
+                            rows="3"
+                            placeholder="Escribe tu comentario...">{{ old('texto') }}</textarea>
+                        @error('texto')
+                            <div class="text-danger mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <button type="submit" class="btn btn-danger">Publicar</button>
+                </form>
+
+                <div style="margin-top: 18px;">
+                    @if(($comentarios ?? collect())->isEmpty())
+                        <p class="texto-valoracion">Aún no hay comentarios.</p>
+                    @else
+                        @foreach($comentarios as $comentario)
+                            <div class="info-elemento" style="border-bottom: 1px solid var(--color-borde); padding-bottom: 12px; margin-bottom: 12px;">
+                                <strong style="text-transform:none; letter-spacing:0; font-size: 13px;">
+                                    {{ $comentario->usuario->nombre ?? 'Usuario' }}
+                                    <span style="color: var(--texto-claro); font-weight: 400; margin-left: 8px;">
+                                        {{ optional($comentario->created_at)->format('d/m/Y H:i') }}
+                                    </span>
+                                </strong>
+                                <p style="margin:0;">{{ $comentario->texto }}</p>
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
 
             <!-- Descripcion -->
             @if($restaurante->descripcion_restaurante)

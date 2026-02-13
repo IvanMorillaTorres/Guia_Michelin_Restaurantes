@@ -59,6 +59,12 @@ class User extends Authenticatable
         )->withTimestamps();
     }
 
+    // comentarios del usuario
+    public function comentarios()
+    {
+        return $this->hasMany(Comentario::class, 'id_users', 'id_users');
+    }
+
     /**
      * Obtener el nombre de la columna de contraseña
      */

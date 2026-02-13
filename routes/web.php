@@ -28,6 +28,9 @@ Route::middleware('auth')->group(function () {
     // valorar un restaurante
     Route::post('/restaurante/{slug}/valorar', [RestauranteController::class, 'valorar'])->name('restaurantes.valorar');
 
+    // comentar un restaurante
+    Route::post('/restaurante/{slug}/comentar', [RestauranteController::class, 'comentar'])->name('restaurantes.comentar');
+
     // guardar/quitar restaurante
     Route::post('/restaurante/{slug}/guardar', [RestauranteController::class, 'toggleGuardado'])->name('restaurantes.guardar');
 

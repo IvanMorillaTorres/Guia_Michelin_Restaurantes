@@ -90,4 +90,10 @@ class Restaurante extends Model
             'id_users'
         )->withTimestamps();
     }
+
+    // comentarios del restaurante
+    public function comentarios()
+    {
+        return $this->hasMany(Comentario::class, 'id_restaurante', 'id_restaurante');
+    }
 }
