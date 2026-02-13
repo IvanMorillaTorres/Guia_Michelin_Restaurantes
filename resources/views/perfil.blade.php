@@ -3,7 +3,7 @@
 @section('titulo', 'Perfil - Guía MICHELIN')
 
 @section('contenido')
-<div class="container" style="padding: 30px 0;">
+<div class="container perfil-page" style="padding: 30px 0;">
     <h1 style="font-weight: 700;">Perfil</h1>
     <p style="color: var(--texto-claro); margin-bottom: 25px;">
         Hola, {{ $usuario->nombre }} {{ $usuario->apellido1 }}! Bienvenido a tu perfil. Aquí puedes ver tus restaurantes guardados y gestionar tu cuenta.

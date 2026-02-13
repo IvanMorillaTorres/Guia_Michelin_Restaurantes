@@ -32,6 +32,54 @@ body {
     background: #fff;
 }
 
+html[data-theme="dark"] body {
+    background: var(--oscuro-michelin);
+}
+
+/* ===== PERFIL (modo oscuro) ===== */
+.perfil-page .card {
+    border-color: var(--color-borde);
+}
+
+html[data-theme="dark"] .perfil-page .card {
+    background: var(--gris-claro);
+    border-color: var(--color-borde);
+    color: var(--texto-oscuro);
+}
+
+html[data-theme="dark"] .perfil-page .card-body,
+html[data-theme="dark"] .perfil-page .card-body h2,
+html[data-theme="dark"] .perfil-page .card-body h1,
+html[data-theme="dark"] .perfil-page .card-body h3,
+html[data-theme="dark"] .perfil-page .card-body p {
+    color: var(--texto-oscuro);
+}
+
+html[data-theme="dark"] .perfil-page .form-label {
+    color: var(--texto-oscuro);
+}
+
+html[data-theme="dark"] .perfil-page .form-control {
+    background: var(--oscuro-michelin);
+    border-color: var(--color-borde);
+    color: var(--texto-oscuro);
+}
+
+html[data-theme="dark"] .perfil-page .form-control::placeholder {
+    color: var(--gris-michelin);
+}
+
+html[data-theme="dark"] .perfil-page .form-control:focus {
+    background: var(--oscuro-michelin);
+    border-color: var(--gris-michelin);
+    color: var(--texto-oscuro);
+    box-shadow: none;
+}
+
+html[data-theme="dark"] .perfil-page .tarjeta-restaurante {
+    background: var(--gris-claro);
+}
+
 a {
     text-decoration: none;
     color: inherit;
