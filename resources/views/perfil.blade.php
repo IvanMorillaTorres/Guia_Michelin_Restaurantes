@@ -259,6 +259,26 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const validateField = (field) => {
+        if (!field || field.disabled) return;
+
+        // For optional fields, if empty, treat as valid
+        const isOptionalEmpty = !field.required && (field.value === null || String(field.value).trim() === '');
+        if (isOptionalEmpty) {
+            field.classList.remove('is-invalid');
+            field.classList.remove('is-valid');
+            return;
+        }
+
+        if (!field.checkValidity()) {
+            field.classList.add('is-invalid');
+            field.classList.remove('is-valid');
+        } else {
+            field.classList.remove('is-invalid');
+            field.classList.add('is-valid');
+        }
+    };
+
     const forms = document.querySelectorAll('.needs-validation');
 
     forms.forEach((form) => {
@@ -269,6 +289,20 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             form.classList.add('was-validated');
         }, false);
+
+        // Validar al salir del campo (blur)
+        const fields = form.querySelectorAll('input, select, textarea');
+        fields.forEach((field) => {
+            field.addEventListener('blur', function () {
+                validateField(field);
+            });
+
+            // Si el usuario empieza a corregir, re-evaluar
+            field.addEventListener('input', function () {
+                // no hagas ruido si el campo aún está vacío y es opcional
+                validateField(field);
+            });
+        });
     });
 
     const telefono = document.getElementById('telefono');
@@ -283,6 +317,10 @@ document.addEventListener('DOMContentLoaded', function () {
             telefono.setCustomValidity(telefonoRegex.test(value) ? '' : 'Telefono no valido');
         };
         telefono.addEventListener('input', validateTelefono);
+        telefono.addEventListener('blur', function () {
+            validateTelefono();
+            validateField(telefono);
+        });
         validateTelefono();
     }
 
@@ -299,6 +337,10 @@ document.addEventListener('DOMContentLoaded', function () {
             nacimiento.setCustomValidity(selected > today ? 'Fecha futura' : '');
         };
         nacimiento.addEventListener('change', validateNacimiento);
+        nacimiento.addEventListener('blur', function () {
+            validateNacimiento();
+            validateField(nacimiento);
+        });
         validateNacimiento();
     }
 
@@ -308,8 +350,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const validateMatch = () => {
             pass2.setCustomValidity(pass.value === pass2.value ? '' : 'No coinciden');
         };
-        pass.addEventListener('input', validateMatch);
-        pass2.addEventListener('input', validateMatch);
+        pass.addEventListener('input', function () {
+            validateMatch();
+            validateField(pass);
+            validateField(pass2);
+        });
+        pass2.addEventListener('input', function () {
+            validateMatch();
+            validateField(pass2);
+        });
+        pass2.addEventListener('blur', function () {
+            validateMatch();
+            validateField(pass2);
+        });
         validateMatch();
     }
 });
