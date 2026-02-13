@@ -71,4 +71,29 @@ class Restaurante extends Model
     {
         return $this->hasOne(Imagen::class, 'id_restaurante', 'id_restaurante')->oldest('id_imagenes');
     }
+
+    // un restaurante tiene muchas valoraciones
+    public function valoraciones()
+    {
+        return $this->hasMany(Valoracion::class, 'id_restaurante', 'id_restaurante');
+    }
+
+    // usuarios que lo tienen guardado
+    public function guardadoPorUsuarios()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'restaurantes_guardados',
+            'id_restaurante',
+            'id_users',
+            'id_restaurante',
+            'id_users'
+        )->withTimestamps();
+    }
+
+    // comentarios del restaurante
+    public function comentarios()
+    {
+        return $this->hasMany(Comentario::class, 'id_restaurante', 'id_restaurante');
+    }
 }

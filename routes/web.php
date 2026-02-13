@@ -3,6 +3,7 @@
 use App\Http\Controllers\RestauranteController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\AdminRestauranteController;
+use App\Http\Controllers\PerfilController;
 use Illuminate\Support\Facades\Route;
 
 // --- autenticacion (publica) ---
@@ -23,6 +24,18 @@ Route::middleware('auth')->group(function () {
 
     // ver un restaurante en detalle
     Route::get('/restaurante/{slug}', [RestauranteController::class, 'mostrar'])->name('restaurantes.mostrar');
+
+    // valorar un restaurante
+    Route::post('/restaurante/{slug}/valorar', [RestauranteController::class, 'valorar'])->name('restaurantes.valorar');
+
+    // comentar un restaurante
+    Route::post('/restaurante/{slug}/comentar', [RestauranteController::class, 'comentar'])->name('restaurantes.comentar');
+
+    // guardar/quitar restaurante
+    Route::post('/restaurante/{slug}/guardar', [RestauranteController::class, 'toggleGuardado'])->name('restaurantes.guardar');
+
+    // perfil
+    Route::get('/perfil', [PerfilController::class, 'mostrar'])->name('perfil');
 });
 
 // --- panel de administracion (solo admin) ---

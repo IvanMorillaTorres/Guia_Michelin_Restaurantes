@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Restaurante;
 use App\Models\Ciudad;
 use App\Models\Estilo;
+use App\Models\Valoracion;
+use App\Models\Comentario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RestauranteController extends Controller
 {
@@ -32,10 +35,23 @@ class RestauranteController extends Controller
         }
 
         // filtro por estilos de cocina
-        if ($request->has('estilos') && is_array($request->estilos)) {
-            $consulta->whereHas('estilos', function ($q) use ($request) {
-                $q->whereIn('estilos.id_estilo', $request->estilos);
-            });
+        // Ojo: el formulario usa "estilos[]" aunque sea un select simple, y puede venir [''].
+        // Normalizamos para que no filtre cuando está vacío.
+        $estilosSeleccionados = $request->input('estilos');
+        if (!empty($estilosSeleccionados)) {
+            if (!is_array($estilosSeleccionados)) {
+                $estilosSeleccionados = [$estilosSeleccionados];
+            }
+
+            $estilosSeleccionados = array_values(array_filter($estilosSeleccionados, function ($valor) {
+                return $valor !== null && $valor !== '';
+            }));
+
+            if (!empty($estilosSeleccionados)) {
+                $consulta->whereHas('estilos', function ($q) use ($estilosSeleccionados) {
+                    $q->whereIn('estilos.id_estilo', $estilosSeleccionados);
+                });
+            }
         }
 
         // filtro por precio minimo
@@ -82,12 +98,21 @@ class RestauranteController extends Controller
         // paginar de 12 en 12
         $restaurantes = $consulta->paginate(12)->withQueryString();
 
+        // ids de restaurantes guardados por el usuario (para pintar el corazon)
+        $guardadosIds = [];
+        if (Auth::check()) {
+            $guardadosIds = Auth::user()
+                ->restaurantesGuardados()
+                ->pluck('restaurantes.id_restaurante')
+                ->toArray();
+        }
+
         // sacar datos para los filtros del formulario
         $ciudades = Ciudad::orderBy('nombre_ciudad')->get();
         $estilos = Estilo::orderBy('nombre_estilo')->get();
 
         // devolver la vista con los datos
-        return view('restaurantes.index', compact('restaurantes', 'ciudades', 'estilos'));
+        return view('restaurantes.index', compact('restaurantes', 'ciudades', 'estilos', 'guardadosIds'));
     }
 
     // mostrar un restaurante en detalle
@@ -95,8 +120,29 @@ class RestauranteController extends Controller
     {
         // buscar el restaurante por su slug
         $restaurante = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenes'])
+            ->withCount('valoraciones')
             ->where('slug', $slug)
             ->firstOrFail();
+
+        $valoracionUsuario = null;
+        if (Auth::check()) {
+            $valoracionUsuario = $restaurante->valoraciones()
+                ->where('id_users', Auth::id())
+                ->value('puntuacion');
+        }
+
+        $estaGuardado = false;
+        if (Auth::check()) {
+            $estaGuardado = Auth::user()
+                ->restaurantesGuardados()
+                ->where('restaurantes.id_restaurante', $restaurante->id_restaurante)
+                ->exists();
+        }
+
+        $comentarios = Comentario::with('usuario')
+            ->where('id_restaurante', $restaurante->id_restaurante)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         // buscar restaurantes parecidos de la misma ciudad
         $parecidos = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenPrincipal'])
@@ -106,6 +152,117 @@ class RestauranteController extends Controller
             ->get();
 
         // devolver la vista
-        return view('restaurantes.mostrar', compact('restaurante', 'parecidos'));
+        return view('restaurantes.mostrar', compact('restaurante', 'parecidos', 'valoracionUsuario', 'estaGuardado', 'comentarios'));
+    }
+
+    // guardar un comentario
+    public function comentar(Request $request, $slug)
+    {
+        $datos = $request->validate([
+            'texto' => 'required|string|min:2|max:1000',
+        ]);
+
+        $restaurante = Restaurante::where('slug', $slug)->firstOrFail();
+
+        // No se puede comentar sin haber valorado antes
+        $puntuacion = Valoracion::where('id_restaurante', $restaurante->id_restaurante)
+            ->where('id_users', Auth::id())
+            ->value('puntuacion');
+
+        if (empty($puntuacion)) {
+            return redirect()
+                ->route('restaurantes.mostrar', $restaurante->slug)
+                ->withErrors(['texto' => 'Debes dejar una valoración (estrellas) antes de comentar.'])
+                ->withInput();
+        }
+
+        // Solo 1 comentario por restaurante y usuario
+        $yaComentado = Comentario::where('id_restaurante', $restaurante->id_restaurante)
+            ->where('id_users', Auth::id())
+            ->exists();
+
+        if ($yaComentado) {
+            return redirect()
+                ->route('restaurantes.mostrar', $restaurante->slug)
+                ->withErrors(['texto' => 'Solo puedes comentar una vez en este restaurante.']);
+        }
+
+        Comentario::create([
+            'id_restaurante' => $restaurante->id_restaurante,
+            'id_users' => Auth::id(),
+            'puntuacion' => (int) $puntuacion,
+            'texto' => $datos['texto'],
+        ]);
+
+        return redirect()
+            ->route('restaurantes.mostrar', $restaurante->slug)
+            ->with('comentario_ok', 'Comentario publicado.');
+    }
+
+    // guardar/quitar un restaurante de guardados
+    public function toggleGuardado(Request $request, $slug)
+    {
+        $restaurante = Restaurante::where('slug', $slug)->firstOrFail();
+        $usuario = Auth::user();
+
+        $ya = $usuario->restaurantesGuardados()
+            ->where('restaurantes.id_restaurante', $restaurante->id_restaurante)
+            ->exists();
+
+        if ($ya) {
+            $usuario->restaurantesGuardados()->detach($restaurante->id_restaurante);
+        } else {
+            $usuario->restaurantesGuardados()->attach($restaurante->id_restaurante);
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'ok' => true,
+                'guardado' => !$ya,
+            ]);
+        }
+
+        return back();
+    }
+
+    // guardar/actualizar una valoracion del usuario
+    public function valorar(Request $request, $slug)
+    {
+        $datos = $request->validate([
+            'puntuacion' => 'required|integer|min:1|max:5',
+        ]);
+
+        $restaurante = Restaurante::where('slug', $slug)->firstOrFail();
+
+        Valoracion::updateOrCreate(
+            [
+                'id_restaurante' => $restaurante->id_restaurante,
+                'id_users' => Auth::id(),
+            ],
+            [
+                'puntuacion' => $datos['puntuacion'],
+            ]
+        );
+
+        // recalcular media y guardarla en restaurantes.valoracion_restaurante
+        $media = Valoracion::where('id_restaurante', $restaurante->id_restaurante)->avg('puntuacion');
+        $restaurante->valoracion_restaurante = round((float) $media, 1);
+        $restaurante->save();
+
+        $count = Valoracion::where('id_restaurante', $restaurante->id_restaurante)->count();
+
+        // respuesta JSON para AJAX (sin recargar)
+        if ($request->expectsJson()) {
+            return response()->json([
+                'ok' => true,
+                'media' => (float) $restaurante->valoracion_restaurante,
+                'count' => $count,
+                'user' => (int) $datos['puntuacion'],
+            ]);
+        }
+
+        return redirect()
+            ->route('restaurantes.mostrar', $restaurante->slug)
+            ->with('valoracion_ok', '¡Gracias! Tu valoración se ha guardado.');
     }
 }

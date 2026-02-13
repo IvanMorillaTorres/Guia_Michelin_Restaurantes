@@ -465,7 +465,6 @@ img {
 
 .barra-filtros {
     display: none;
-}
     position: sticky;
     top: 100px;
     height: fit-content;
@@ -850,6 +849,30 @@ img {
     color: var(--texto-claro);
 }
 
+/* Valoracion interactiva (click en estrellas) */
+.valoracion-interactiva {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.estrella-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.estrella-btn .bi {
+    font-size: 24px;
+    color: var(--dorado);
+}
+
+.estrella-btn:focus {
+    outline: none;
+}
+
 .detalle-seccion {
     margin-bottom: 35px;
 }
@@ -951,6 +974,58 @@ img {
     border: 1px solid var(--color-borde);
     z-index: 0;
     display: block;
+}
+
+/* ===== COMENTARIOS (DETALLE) ===== */
+.comentarios-lista {
+    max-height: 340px;
+    overflow-y: auto;
+    border: 1px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 14px;
+    background: white;
+}
+
+html[data-theme="dark"] .comentarios-lista {
+    background: var(--gris-claro);
+}
+
+.comentario-item {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.comentario-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.comentario-cabecera {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--texto-oscuro);
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.comentario-estrellas {
+    color: var(--dorado);
+}
+
+.comentario-fecha {
+    color: var(--texto-claro);
+    font-weight: 400;
+}
+
+.comentario-texto {
+    margin: 6px 0 0;
+    color: var(--texto-oscuro);
 }
 
 .info-elemento a:hover {
