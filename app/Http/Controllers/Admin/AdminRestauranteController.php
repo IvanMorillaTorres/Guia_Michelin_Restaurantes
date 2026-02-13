@@ -10,6 +10,10 @@ use App\Models\Imagen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+// Importamos las clases necesarias para el envío de correos
+use Illuminate\Support\Facades\Mail;  // Facade para enviar correos
+use Illuminate\Support\Facades\Log;   // Facade para registrar logs
+use App\Mail\NotificacionCrudRestaurante;  // Nuestra clase Mailable personalizada
 
 class AdminRestauranteController extends Controller
 {
@@ -118,6 +122,26 @@ class AdminRestauranteController extends Controller
             }
         }
 
+        // ===== ENVÍO DE CORREO ELECTRÓNICO =====
+        // Enviamos un correo de notificación al administrador
+        try {
+            // Mail::to() - especifica el destinatario del correo
+            // send() - envía el correo usando la clase Mailable
+            // new NotificacionCrudRestaurante() - crea una instancia del correo con los datos
+            Mail::to('marcnavarrojocs@gmail.com')->send(
+                new NotificacionCrudRestaurante(
+                    'crear',                    // Tipo de acción realizada
+                    $restaurante->load('ciudad'), // Restaurante con relación ciudad cargada
+                    auth()->user()              // Usuario autenticado que realizó la acción
+                )
+            );
+        } catch (\Exception $e) {
+            // Si falla el envío del correo, lo registramos en el log
+            // pero NO detenemos la ejecución (el restaurante ya fue creado)
+            Log::error('Error al enviar correo de notificación: ' . $e->getMessage());
+        }
+        // ===== FIN ENVÍO DE CORREO =====
+
         return redirect()->route('admin.restaurantes.index')
             ->with('exito', 'Restaurante creado correctamente.');
     }
@@ -199,6 +223,23 @@ class AdminRestauranteController extends Controller
             }
         }
 
+        // ===== ENVÍO DE CORREO ELECTRÓNICO =====
+        // Enviamos un correo de notificación al administrador
+        try {
+            // Enviamos el correo con la acción 'editar'
+            Mail::to('marcnavarrojocs@gmail.com')->send(
+                new NotificacionCrudRestaurante(
+                    'editar',                   // Tipo de acción realizada
+                    $restaurante->load('ciudad'), // Restaurante actualizado con relación ciudad
+                    auth()->user()              // Usuario que realizó la actualización
+                )
+            );
+        } catch (\Exception $e) {
+            // Si falla el envío, lo registramos pero continuamos
+            Log::error('Error al enviar correo de notificación: ' . $e->getMessage());
+        }
+        // ===== FIN ENVÍO DE CORREO =====
+
         return redirect()->route('admin.restaurantes.index')
             ->with('exito', 'Restaurante actualizado correctamente.');
     }
@@ -207,6 +248,14 @@ class AdminRestauranteController extends Controller
     public function eliminar($id)
     {
         $restaurante = Restaurante::findOrFail($id);
+
+        // ===== GUARDAMOS DATOS ANTES DE ELIMINAR =====
+        // Necesitamos guardar el nombre antes de eliminar para enviarlo en el correo
+        // porque después de delete() ya no tendremos acceso a los datos
+        $datosRestaurante = [
+            'nombre_restaurante' => $restaurante->nombre_restaurante,
+        ];
+        // ===== FIN GUARDADO DE DATOS =====
 
         // eliminar imagenes del storage
         foreach ($restaurante->imagenes as $imagen) {
@@ -220,6 +269,23 @@ class AdminRestauranteController extends Controller
 
         // eliminar el restaurante (las imagenes se borran por cascade)
         $restaurante->delete();
+
+        // ===== ENVÍO DE CORREO ELECTRÓNICO =====
+        // Enviamos un correo de notificación al administrador
+        try {
+            // Usamos los datos guardados porque el restaurante ya fue eliminado
+            Mail::to('marcnavarrojocs@gmail.com')->send(
+                new NotificacionCrudRestaurante(
+                    'eliminar',           // Tipo de acción realizada
+                    (object)$datosRestaurante, // Convertimos el array a objeto para acceder con ->
+                    auth()->user()        // Usuario que realizó la eliminación
+                )
+            );
+        } catch (\Exception $e) {
+            // Si falla el envío, lo registramos pero continuamos
+            Log::error('Error al enviar correo de notificación: ' . $e->getMessage());
+        }
+        // ===== FIN ENVÍO DE CORREO =====
 
         return redirect()->route('admin.restaurantes.index')
             ->with('exito', 'Restaurante eliminado correctamente.');
