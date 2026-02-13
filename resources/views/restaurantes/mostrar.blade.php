@@ -292,58 +292,7 @@
         </aside>
     </div>
 
-    <!-- Restaurantes parecidos -->
-    @if($parecidos->count() > 0)
-        <section class="restaurantes-similares">
-            <h2>Restaurantes similares</h2>
-            <div class="cuadricula-restaurantes">
-                @foreach($parecidos as $parecido)
-                    <article class="tarjeta-restaurante">
-                        <a href="{{ route('restaurantes.mostrar', $parecido->slug) }}" class="tarjeta-enlace">
-                            <div class="tarjeta-imagen">
-                                @if($parecido->imagenPrincipal)
-                                    <img src="{{ $parecido->imagenPrincipal->url }}" alt="{{ $parecido->nombre_restaurante }}">
-                                @else
-                                    <div class="imagen-vacia"></div>
-                                @endif
-                            </div>
-                            <div class="tarjeta-contenido">
-                                <h3>{{ $parecido->nombre_restaurante }}</h3>
-                                <div class="tarjeta-info">
-                                    <span class="cocina">
-                                        @foreach($parecido->estilos as $estilo)
-                                            {{ $estilo->nombre_estilo }}@if(!$loop->last), @endif
-                                        @endforeach
-                                    </span>
-                                </div>
-                                <div class="tarjeta-meta">
-                                    <span class="ubicacion">
-                                        <i class="bi bi-geo-alt-fill"></i> {{ $parecido->ciudad->nombre_ciudad ?? '' }}
-                                    </span>
-                                    @if($parecido->precio_restaurante)
-                                        <span class="precio">{{ number_format($parecido->precio_restaurante, 0) }}€</span>
-                                    @endif
-                                </div>
-                                <div class="valoracion">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= floor($parecido->valoracion_restaurante))
-                                            <i class="bi bi-star-fill"></i>
-                                        @elseif($i - 0.5 <= $parecido->valoracion_restaurante)
-                                            <i class="bi bi-star-half"></i>
-                                        @else
-                                            <i class="bi bi-star"></i>
-                                        @endif
-                                    @endfor
-                                </div>
-                            </div>
-                        </a>
-                    </article>
-                @endforeach
-            </div>
-        </section>
-    @endif
-
-    <!-- Comentarios (al final para que no alargue la ficha) -->
+    <!-- Comentarios -->
     <section class="detalle-seccion">
         <h2>Comentarios ({{ ($comentarios ?? collect())->count() }})</h2>
 
@@ -397,5 +346,57 @@
             @endif
         </div>
     </section>
+
+    <!-- Restaurantes parecidos -->
+    @if($parecidos->count() > 0)
+        <section class="restaurantes-similares">
+            <h2>Restaurantes similares</h2>
+            <div class="cuadricula-restaurantes">
+                @foreach($parecidos as $parecido)
+                    <article class="tarjeta-restaurante">
+                        <a href="{{ route('restaurantes.mostrar', $parecido->slug) }}" class="tarjeta-enlace">
+                            <div class="tarjeta-imagen">
+                                @if($parecido->imagenPrincipal)
+                                    <img src="{{ $parecido->imagenPrincipal->url }}" alt="{{ $parecido->nombre_restaurante }}">
+                                @else
+                                    <div class="imagen-vacia"></div>
+                                @endif
+                            </div>
+                            <div class="tarjeta-contenido">
+                                <h3>{{ $parecido->nombre_restaurante }}</h3>
+                                <div class="tarjeta-info">
+                                    <span class="cocina">
+                                        @foreach($parecido->estilos as $estilo)
+                                            {{ $estilo->nombre_estilo }}@if(!$loop->last), @endif
+                                        @endforeach
+                                    </span>
+                                </div>
+                                <div class="tarjeta-meta">
+                                    <span class="ubicacion">
+                                        <i class="bi bi-geo-alt-fill"></i> {{ $parecido->ciudad->nombre_ciudad ?? '' }}
+                                    </span>
+                                    @if($parecido->precio_restaurante)
+                                        <span class="precio">{{ number_format($parecido->precio_restaurante, 0) }}€</span>
+                                    @endif
+                                </div>
+                                <div class="valoracion">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= floor($parecido->valoracion_restaurante))
+                                            <i class="bi bi-star-fill"></i>
+                                        @elseif($i - 0.5 <= $parecido->valoracion_restaurante)
+                                            <i class="bi bi-star-half"></i>
+                                        @else
+                                            <i class="bi bi-star"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                            </div>
+                        </a>
+                    </article>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
 </div>
 @endsection
