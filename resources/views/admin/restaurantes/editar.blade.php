@@ -82,12 +82,6 @@
             <input type="number" id="precio_restaurante" name="precio_restaurante" step="0.01" min="0" value="{{ old('precio_restaurante', $restaurante->precio_restaurante) }}">
         </div>
 
-        <!-- Valoracion -->
-        <div class="campo-formulario">
-            <label for="valoracion_restaurante">Valoración (0-5)</label>
-            <input type="number" id="valoracion_restaurante" name="valoracion_restaurante" step="0.1" min="0" max="5" value="{{ old('valoracion_restaurante', $restaurante->valoracion_restaurante) }}">
-        </div>
-
         <!-- Web -->
         <div class="campo-formulario">
             <label for="web_real_restaurante">Página web *</label>

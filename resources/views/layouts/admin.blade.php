@@ -21,8 +21,11 @@
                 </a>
                 <div class="cabecera-derecha">
                     <nav class="nav-principal">
-                        <a href="{{ route('admin.restaurantes.index') }}" class="activo">
+                        <a href="{{ route('admin.restaurantes.index') }}" class="{{  request()->routeIs('admin.restaurantes.*') ? 'activo' : '' }}">
                             <i class="bi bi-shop"></i> Restaurantes
+                        </a>
+                        <a href="{{ route('admin.usuarios.index') }}" class="{{  request()->routeIs('admin.usuarios.*') ? 'activo' : '' }}">
+                            <i class="bi bi-people"></i> Usuarios
                         </a>
                         <a href="{{ route('restaurantes.index') }}">
                             <i class="bi bi-eye"></i> Ver web
@@ -51,9 +54,31 @@
     <main class="contenido-admin">
         <div class="container-admin">
             @if(session('exito'))
-                <div class="alerta-exito">
-                    <i class="bi bi-check-circle"></i> {{ session('exito') }}
-                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            title: '¡Éxito!',
+                            text: '{{ session('exito') }}',
+                            icon: 'success',
+                            confirmButtonColor: '#4CAF50',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    });
+                </script>
+            @endif
+
+            @if(session('error'))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            title: 'Error',
+                            text: '{{ session('error') }}',
+                            icon: 'error',
+                            confirmButtonColor: '#d32f2f',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    });
+                </script>
             @endif
 
             @yield('contenido')
@@ -61,6 +86,29 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Función para manejar eliminación con SweetAlert2
+        function confirmarEliminacion(event, mensaje = '¿Estás seguro de que deseas eliminar?') {
+            event.preventDefault();
+            const form = event.target.closest('form');
+            
+            Swal.fire({
+                title: 'Confirmar eliminación',
+                text: mensaje,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d32f2f',
+                cancelButtonColor: '#757575',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
+    </script>
     <script>
         function initDarkMode() {
             const htmlElement = document.documentElement;
