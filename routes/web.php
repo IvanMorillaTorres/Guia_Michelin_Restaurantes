@@ -37,6 +37,12 @@ Route::middleware('auth')->group(function () {
 
     // perfil
     Route::get('/perfil', [PerfilController::class, 'mostrar'])->name('perfil');
+
+    // actualizar datos del perfil
+    Route::put('/perfil', [PerfilController::class, 'actualizarDatos'])->name('perfil.actualizar');
+
+    // cambiar contraseña
+    Route::put('/perfil/password', [PerfilController::class, 'actualizarPassword'])->name('perfil.password');
 });
 
 // Endpoints pequeños para selects dependientes (paises -> comunidades -> ciudades)

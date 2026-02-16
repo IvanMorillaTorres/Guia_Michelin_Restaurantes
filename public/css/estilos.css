@@ -32,6 +32,54 @@ body {
     background: #fff;
 }
 
+html[data-theme="dark"] body {
+    background: var(--oscuro-michelin);
+}
+
+/* ===== PERFIL (modo oscuro) ===== */
+.perfil-page .card {
+    border-color: var(--color-borde);
+}
+
+html[data-theme="dark"] .perfil-page .card {
+    background: var(--gris-claro);
+    border-color: var(--color-borde);
+    color: var(--texto-oscuro);
+}
+
+html[data-theme="dark"] .perfil-page .card-body,
+html[data-theme="dark"] .perfil-page .card-body h2,
+html[data-theme="dark"] .perfil-page .card-body h1,
+html[data-theme="dark"] .perfil-page .card-body h3,
+html[data-theme="dark"] .perfil-page .card-body p {
+    color: var(--texto-oscuro);
+}
+
+html[data-theme="dark"] .perfil-page .form-label {
+    color: var(--texto-oscuro);
+}
+
+html[data-theme="dark"] .perfil-page .form-control {
+    background: var(--oscuro-michelin);
+    border-color: var(--color-borde);
+    color: var(--texto-oscuro);
+}
+
+html[data-theme="dark"] .perfil-page .form-control::placeholder {
+    color: var(--gris-michelin);
+}
+
+html[data-theme="dark"] .perfil-page .form-control:focus {
+    background: var(--oscuro-michelin);
+    border-color: var(--gris-michelin);
+    color: var(--texto-oscuro);
+    box-shadow: none;
+}
+
+html[data-theme="dark"] .perfil-page .tarjeta-restaurante {
+    background: var(--gris-claro);
+}
+
 a {
     text-decoration: none;
     color: inherit;
@@ -407,14 +455,11 @@ img {
 
 /* ===== LINEA SEPARADORA ===== */
 .linea-separadora {
-    position: relative;
-    width: 100vw;
-    left: 50%;
-    margin-left: -50vw;
     border: none;
     border-top: 1px solid var(--color-borde);
     margin-top: 16px;
     margin-bottom: 0;
+    width: 100%;
 }
 
 /* ===== BARRA DE RESULTADOS ===== */
@@ -1304,6 +1349,26 @@ html[data-theme="dark"] .comentarios-lista {
     background: white;
     transition: border-color 0.2s;
     box-sizing: border-box;
+}
+
+.campo-formulario input.is-invalid,
+.campo-formulario select.is-invalid,
+.campo-formulario textarea.is-invalid {
+    border-color: var(--rojo-michelin);
+}
+
+.campo-formulario input.is-valid,
+.campo-formulario select.is-valid,
+.campo-formulario textarea.is-valid {
+    border-color: var(--verde);
+}
+
+.campo-formulario .js-error {
+    display: none;
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--rojo-michelin);
+    font-weight: 600;
 }
 
 .campo-formulario input:focus,
