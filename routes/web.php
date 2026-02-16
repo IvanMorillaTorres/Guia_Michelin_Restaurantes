@@ -39,6 +39,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/perfil', [PerfilController::class, 'mostrar'])->name('perfil');
 });
 
+// Endpoints pequeños para selects dependientes (paises -> comunidades -> ciudades)
+Route::middleware('auth')->group(function () {
+    Route::get('/api/paises/{id}/comunidades', function ($id) {
+        return \App\Models\Comunidad::where('id_pais', $id)->orderBy('nombre_comunidad')->get();
+    })->name('api.paises.comunidades');
+
+    Route::get('/api/comunidades/{id}/ciudades', function ($id) {
+        return \App\Models\Ciudad::where('id_comunidad', $id)->orderBy('nombre_ciudad')->get();
+    })->name('api.comunidades.ciudades');
+});
+
 // --- panel de administracion (solo admin) ---
 Route::prefix('admin')->middleware(['auth', 'esAdmin'])->group(function () {
     // CRUD de Restaurantes
