@@ -3,84 +3,72 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Clase para enviar notificaciones por correo electrónico
- * cuando se realizan operaciones CRUD en el panel de administración
+ * Clase para el envío de notificaciones por correo electrónico.
+ * Se encarga de pasar los datos a la vista y definir el asunto.
  */
 class NotificacionCrudRestaurante extends Mailable
 {
     use Queueable, SerializesModels;
 
-    // Propiedades públicas que estarán disponibles en la vista del correo
-    public $accion;           // Tipo de acción: 'crear', 'editar', 'eliminar'
-    public $restaurante;      // Datos del restaurante afectado
-    public $usuario;          // Usuario que realizó la acción
+    // Variables públicas: Se pasan automáticamente a la vista del correo
+    public $tipoAccion;      // 'crear', 'editar' o 'eliminar'
+    public $datosRestaurante; // Objeto con los datos del restaurante
+    public $usuarioAutor;     // Usuario que realizó la acción
 
     /**
-     * Constructor de la clase
+     * Constructor: Recibe los datos al crear una nueva notificación.
      * 
-     * @param string $accion - Tipo de operación realizada ('crear', 'editar', 'eliminar')
-     * @param mixed $restaurante - Objeto o array con los datos del restaurante
-     * @param mixed $usuario - Usuario que realizó la acción (opcional)
+     * @param string $tipoAccion Tipo de operación realizada
+     * @param object $datosRestaurante Información del restaurante
+     * @param object $usuarioAutor (Opcional) Usuario que hizo el cambio
      */
-    public function __construct($accion, $restaurante, $usuario = null)
+    public function __construct($tipoAccion, $datosRestaurante, $usuarioAutor = null)
     {
-        // Asignamos los datos que se pasarán a la vista del correo
-        $this->accion = $accion;
-        $this->restaurante = $restaurante;
-        $this->usuario = $usuario;
+        $this->tipoAccion = $tipoAccion;
+        $this->datosRestaurante = $datosRestaurante;
+        $this->usuarioAutor = $usuarioAutor;
     }
 
     /**
-     * Define el sobre del correo (asunto, remitente, etc.)
-     * 
-     * @return \Illuminate\Mail\Mailables\Envelope
+     * Define el "sobre" del correo (Asunto y remitente).
      */
     public function envelope(): Envelope
     {
-        // Determinamos el asunto del correo según la acción realizada
-        $asuntos = [
-            'crear' => '✅ Nuevo restaurante creado',
-            'editar' => '✏️ Restaurante actualizado',
-            'eliminar' => '🗑️ Restaurante eliminado',
-        ];
+        // Definimos un asunto descriptivo según la acción
+        $asunto = match ($this->tipoAccion) {
+            'crear' => 'Nuevo restaurante creado',
+            'editar' => 'Restaurante actualizado',
+            'eliminar' => 'Restaurante eliminado',
+            default => 'Notificación de Restaurante',
+        };
 
-        // Obtenemos el asunto correspondiente o usamos uno por defecto
-        $asunto = $asuntos[$this->accion] ?? 'Notificación de cambio en restaurante';
-
-        // Retornamos el sobre con el asunto configurado
         return new Envelope(
             subject: $asunto,
         );
     }
 
     /**
-     * Define el contenido del correo (vista y datos)
-     * 
-     * @return \Illuminate\Mail\Mailables\Content
+     * Define el contenido del correo (Vista HTML).
      */
     public function content(): Content
     {
-        // Retornamos el contenido usando una vista Blade
-        // La vista recibirá automáticamente las propiedades públicas de esta clase
         return new Content(
             view: 'emails.notificacion-crud-restaurante',
         );
     }
 
     /**
-     * Obtiene los archivos adjuntos del mensaje (opcional)
-     * 
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     * Adjuntos del correo (vacío en este caso).
      */
     public function attachments(): array
     {
-        // No enviamos archivos adjuntos en este caso
         return [];
     }
 }
