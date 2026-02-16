@@ -23,6 +23,32 @@
             <div class="fila-filtros">
                 <div class="filtros-izquierda">
 
+                    <!-- País -->
+                    <label class="etiqueta-filtro etiqueta-select">
+                        <span>País</span>
+                        <select name="pais" class="select-oculto" onchange="document.getElementById('formularioFiltros').submit()">
+                            <option value="">Todos los países</option>
+                            @foreach($paises as $pais)
+                                <option value="{{ $pais->id_pais }}" {{ request('pais') == $pais->id_pais ? 'selected' : '' }}>
+                                    {{ $pais->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </label>
+
+                    <!-- Comunidad Autónoma -->
+                    <label class="etiqueta-filtro etiqueta-select">
+                        <span>Comunidad</span>
+                        <select name="comunidad" class="select-oculto" onchange="document.getElementById('formularioFiltros').submit()">
+                            <option value="">Todas las comunidades</option>
+                            @foreach($comunidades as $comunidad)
+                                <option value="{{ $comunidad->id_comunidad }}" {{ request('comunidad') == $comunidad->id_comunidad ? 'selected' : '' }}>
+                                    {{ $comunidad->nombre_comunidad }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </label>
+
                     <!-- Ciudad -->
                     <label class="etiqueta-filtro etiqueta-select">
                         <span>Ciudad</span>
