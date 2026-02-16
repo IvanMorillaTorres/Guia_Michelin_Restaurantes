@@ -17,7 +17,27 @@
             <input type="text" name="busqueda" value="{{ request('busqueda') }}" placeholder="Buscar por nombre..." class="admin-campo-busqueda">
         </div>
         <div class="admin-filtro-campo">
-            <select name="ciudad" class="admin-campo-select">
+            <select name="pais" id="filtro_pais" class="admin-campo-select">
+                <option value="">Todos los países</option>
+                @foreach($paises as $pais)
+                    <option value="{{ $pais->id_pais }}" {{ request('pais') == $pais->id_pais ? 'selected' : '' }}>
+                        {{ $pais->nombre }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="admin-filtro-campo">
+            <select name="comunidad" id="filtro_comunidad" class="admin-campo-select">
+                <option value="">Todas las comunidades</option>
+                @foreach($comunidades as $comunidad)
+                    <option value="{{ $comunidad->id_comunidad }}" {{ request('comunidad') == $comunidad->id_comunidad ? 'selected' : '' }}>
+                        {{ $comunidad->nombre_comunidad }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="admin-filtro-campo">
+            <select name="ciudad" id="filtro_ciudad" class="admin-campo-select">
                 <option value="">Todas las ciudades</option>
                 @foreach($ciudades as $ciudad)
                     <option value="{{ $ciudad->id_ciudad }}" {{ request('ciudad') == $ciudad->id_ciudad ? 'selected' : '' }}>
@@ -52,6 +72,88 @@
         </div>
     </div>
 </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const pais = document.getElementById('filtro_pais');
+    const comunidad = document.getElementById('filtro_comunidad');
+    const ciudad = document.getElementById('filtro_ciudad');
+
+    if (!pais || !comunidad || !ciudad) return;
+
+    const allComunidadesHtml = comunidad.innerHTML;
+    const allCiudadesHtml = ciudad.innerHTML;
+
+    async function cargarComunidades(idPais, comunidadSeleccionada = '') {
+        if (!idPais) {
+            comunidad.innerHTML = allComunidadesHtml;
+            if (comunidadSeleccionada) comunidad.value = String(comunidadSeleccionada);
+            return;
+        }
+
+        const res = await fetch(`/api/paises/${idPais}/comunidades`, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) throw new Error('No se pudieron cargar comunidades');
+        const data = await res.json();
+
+        comunidad.innerHTML = '<option value="">Todas las comunidades</option>';
+        data.forEach((c) => {
+            const opt = document.createElement('option');
+            opt.value = String(c.id_comunidad);
+            opt.textContent = c.nombre_comunidad;
+            comunidad.appendChild(opt);
+        });
+        if (comunidadSeleccionada) comunidad.value = String(comunidadSeleccionada);
+    }
+
+    async function cargarCiudades(idComunidad, ciudadSeleccionada = '') {
+        if (!idComunidad) {
+            ciudad.innerHTML = allCiudadesHtml;
+            if (ciudadSeleccionada) ciudad.value = String(ciudadSeleccionada);
+            return;
+        }
+
+        const res = await fetch(`/api/comunidades/${idComunidad}/ciudades`, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) throw new Error('No se pudieron cargar ciudades');
+        const data = await res.json();
+
+        ciudad.innerHTML = '<option value="">Todas las ciudades</option>';
+        data.forEach((c) => {
+            const opt = document.createElement('option');
+            opt.value = String(c.id_ciudad);
+            opt.textContent = c.nombre_ciudad;
+            ciudad.appendChild(opt);
+        });
+        if (ciudadSeleccionada) ciudad.value = String(ciudadSeleccionada);
+    }
+
+    pais.addEventListener('change', async function () {
+        const idPais = this.value;
+        // Al cambiar país: limpiamos comunidad y ciudad y recargamos comunidades
+        comunidad.value = '';
+        ciudad.value = '';
+        ciudad.innerHTML = allCiudadesHtml;
+
+        try {
+            await cargarComunidades(idPais);
+        } catch (e) {
+            // si falla AJAX, volvemos a la lista original
+            comunidad.innerHTML = allComunidadesHtml;
+        }
+    });
+
+    comunidad.addEventListener('change', async function () {
+        const idComunidad = this.value;
+        // Al cambiar comunidad: limpiamos ciudad y recargamos ciudades
+        ciudad.value = '';
+
+        try {
+            await cargarCiudades(idComunidad);
+        } catch (e) {
+            ciudad.innerHTML = allCiudadesHtml;
+        }
+    });
+});
+</script>
 
 <!-- Info resultados -->
 <div class="admin-info-resultados">

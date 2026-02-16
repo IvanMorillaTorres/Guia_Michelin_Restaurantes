@@ -10,6 +10,9 @@ use App\Models\Comentario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Models\Pais;
+use App\Models\Comunidad;
+
 class RestauranteController extends Controller
 {
     // mostrar todos los restaurantes con filtros
@@ -29,14 +32,53 @@ class RestauranteController extends Controller
             });
         }
 
-        // filtro por ciudad
-        if ($request->ciudad != '') {
+        // --- FILTROS DE UBICACIÓN ACUMULATIVOS ---
+
+        // 1. Filtro por País
+        if ($request->filled('pais')) {
+            $consulta->whereHas('ciudad.comunidad', function ($q) use ($request) {
+                $q->where('id_pais', $request->pais);
+            });
+        }
+
+        // 2. Filtro por Comunidad Autónoma
+        if ($request->filled('comunidad')) {
+            $consulta->whereHas('ciudad', function ($q) use ($request) {
+                $q->where('id_comunidad', $request->comunidad);
+            });
+        }
+
+        // 3. Filtro por Ciudad
+        if ($request->filled('ciudad')) {
             $consulta->where('id_ciudad', $request->ciudad);
         }
 
+        // --- CARGA DE LISTAS DEPENDIENTES (ACUMULATIVAS) ---
+
+        // Países: Siempre mostramos todos
+        $paises = Pais::orderBy('nombre')->get();
+
+        // Comunidades: Dependen del país seleccionado
+        if ($request->filled('pais')) {
+            $comunidades = Comunidad::where('id_pais', $request->pais)->orderBy('nombre_comunidad')->get();
+        } else {
+            $comunidades = Comunidad::orderBy('nombre_comunidad')->get();
+        }
+
+        // Ciudades: Dependen de la comunidad o del país
+        if ($request->filled('comunidad')) {
+            $ciudades = Ciudad::where('id_comunidad', $request->comunidad)->orderBy('nombre_ciudad')->get();
+        } elseif ($request->filled('pais')) {
+            $ciudades = Ciudad::whereHas('comunidad', function($q) use ($request) {
+                $q->where('id_pais', $request->pais);
+            })->orderBy('nombre_ciudad')->get();
+        } else {
+            $ciudades = Ciudad::orderBy('nombre_ciudad')->get();
+        }
+
+        // --- RESTO DE FILTROS ---
+
         // filtro por estilos de cocina
-        // Ojo: el formulario usa "estilos[]" aunque sea un select simple, y puede venir [''].
-        // Normalizamos para que no filtre cuando está vacío.
         $estilosSeleccionados = $request->input('estilos');
         if (!empty($estilosSeleccionados)) {
             if (!is_array($estilosSeleccionados)) {
@@ -107,12 +149,11 @@ class RestauranteController extends Controller
                 ->toArray();
         }
 
-        // sacar datos para los filtros del formulario
-        $ciudades = Ciudad::orderBy('nombre_ciudad')->get();
+        // sacar datos para los filtros del formulario (estilos siempre todos)
         $estilos = Estilo::orderBy('nombre_estilo')->get();
 
         // devolver la vista con los datos
-        return view('restaurantes.index', compact('restaurantes', 'ciudades', 'estilos', 'guardadosIds'));
+        return view('restaurantes.index', compact('restaurantes', 'paises', 'comunidades', 'ciudades', 'estilos', 'guardadosIds'));
     }
 
     // mostrar un restaurante en detalle
