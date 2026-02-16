@@ -26,7 +26,7 @@
                     <!-- País -->
                     <label class="etiqueta-filtro etiqueta-select">
                         <span>País</span>
-                        <select name="pais" class="select-oculto" onchange="this.form.querySelector('select[name=\"comunidad\"]').value=''; this.form.querySelector('select[name=\"ciudad\"]').value=''; document.getElementById('formularioFiltros').submit()">
+                        <select name="pais" id="filtro_pais" class="select-oculto">
                             <option value="">Todos los países</option>
                             @foreach($paises as $pais)
                                 <option value="{{ $pais->id_pais }}" {{ request('pais') == $pais->id_pais ? 'selected' : '' }}>
@@ -39,7 +39,7 @@
                     <!-- Comunidad Autónoma -->
                     <label class="etiqueta-filtro etiqueta-select">
                         <span>Comunidad</span>
-                        <select name="comunidad" class="select-oculto" onchange="this.form.querySelector('select[name=\"ciudad\"]').value=''; document.getElementById('formularioFiltros').submit()">
+                        <select name="comunidad" id="filtro_comunidad" class="select-oculto">
                             <option value="">Todas las comunidades</option>
                             @foreach($comunidades as $comunidad)
                                 <option value="{{ $comunidad->id_comunidad }}" {{ request('comunidad') == $comunidad->id_comunidad ? 'selected' : '' }}>
@@ -52,7 +52,7 @@
                     <!-- Ciudad -->
                     <label class="etiqueta-filtro etiqueta-select">
                         <span>Ciudad</span>
-                        <select name="ciudad" class="select-oculto" onchange="document.getElementById('formularioFiltros').submit()">
+                        <select name="ciudad" id="filtro_ciudad" class="select-oculto">
                             <option value="">Todas las ciudades</option>
                             @foreach($ciudades as $ciudad)
                                 <option value="{{ $ciudad->id_ciudad }}" {{ request('ciudad') == $ciudad->id_ciudad ? 'selected' : '' }}>
@@ -65,7 +65,7 @@
                     <!-- Estilo de cocina -->
                     <label class="etiqueta-filtro etiqueta-select">
                         <span>Cocina</span>
-                        <select name="estilos[]" class="select-oculto" onchange="document.getElementById('formularioFiltros').submit()">
+                        <select name="estilos[]" class="select-oculto">
                             <option value="">Todos los estilos</option>
                             @foreach($estilos as $estilo)
                                 <option value="{{ $estilo->id_estilo }}"
@@ -79,7 +79,7 @@
                     <!-- Precio -->
                     <label class="etiqueta-filtro etiqueta-select">
                         <span>Precio</span>
-                        <select name="precio_rango" class="select-oculto" onchange="document.getElementById('formularioFiltros').submit()">
+                        <select name="precio_rango" class="select-oculto">
                             <option value="">Todos</option>
                             <option value="0-30" {{ request('precio_rango') == '0-30' ? 'selected' : '' }}>Hasta 30€</option>
                             <option value="30-60" {{ request('precio_rango') == '30-60' ? 'selected' : '' }}>30€ - 60€</option>
@@ -91,7 +91,7 @@
                     <!-- Valoracion -->
                     <label class="etiqueta-filtro etiqueta-select">
                         <span>Valoración</span>
-                        <select name="valoracion_min" class="select-oculto" onchange="document.getElementById('formularioFiltros').submit()">
+                        <select name="valoracion_min" class="select-oculto">
                             <option value="">Todas</option>
                             @for($i = 5; $i >= 1; $i--)
                                 <option value="{{ $i }}" {{ request('valoracion_min') == $i ? 'selected' : '' }}>
@@ -104,7 +104,7 @@
                     <!-- Ordenar -->
                     <label class="etiqueta-filtro etiqueta-select">
                         <span>Ordenar</span>
-                        <select name="orden" class="select-oculto" onchange="document.getElementById('formularioFiltros').submit()">
+                        <select name="orden" class="select-oculto">
                             <option value="nombre" {{ request('orden') == 'nombre' ? 'selected' : '' }}>Nombre</option>
                             <option value="valoracion" {{ request('orden') == 'valoracion' ? 'selected' : '' }}>Valoración</option>
                             <option value="precio_asc" {{ request('orden') == 'precio_asc' ? 'selected' : '' }}>Precio ↑</option>
@@ -114,10 +114,106 @@
 
                 </div>
                 <div class="filtros-derecha">
+                    <button type="submit" class="etiqueta-filtro">Filtrar</button>
                     <a href="{{ route('restaurantes.index') }}" class="etiqueta-filtro etiqueta-limpiar">Limpiar</a>
                 </div>
             </div>
         </form>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const pais = document.getElementById('filtro_pais');
+                const comunidad = document.getElementById('filtro_comunidad');
+                const ciudad = document.getElementById('filtro_ciudad');
+
+                if (!pais || !comunidad || !ciudad) return;
+
+                const comunidadesInicial = comunidad.innerHTML;
+                const ciudadesInicial = ciudad.innerHTML;
+
+                async function cargarComunidades(idPais) {
+                    const res = await fetch(`/api/paises/${idPais}/comunidades`, { headers: { 'Accept': 'application/json' } });
+                    if (!res.ok) throw new Error('No se pudieron cargar comunidades');
+                    return res.json();
+                }
+
+                async function cargarCiudadesDeComunidad(idComunidad) {
+                    const res = await fetch(`/api/comunidades/${idComunidad}/ciudades`, { headers: { 'Accept': 'application/json' } });
+                    if (!res.ok) throw new Error('No se pudieron cargar ciudades');
+                    return res.json();
+                }
+
+                async function cargarCiudadesDePais(idPais) {
+                    const res = await fetch(`/api/paises/${idPais}/ciudades`, { headers: { 'Accept': 'application/json' } });
+                    if (!res.ok) throw new Error('No se pudieron cargar ciudades');
+                    return res.json();
+                }
+
+                pais.addEventListener('change', async function () {
+                    const idPais = this.value;
+
+                    // reset dependientes
+                    comunidad.value = '';
+                    ciudad.value = '';
+                    ciudad.innerHTML = ciudadesInicial;
+
+                    if (!idPais) {
+                        // volvemos a lo que teníamos al cargar (para "todo")
+                        comunidad.innerHTML = comunidadesInicial;
+                        return;
+                    }
+
+                    try {
+                        const dataComunidades = await cargarComunidades(idPais);
+                        comunidad.innerHTML = '<option value="">Todas las comunidades</option>';
+                        dataComunidades.forEach((c) => {
+                            const opt = document.createElement('option');
+                            opt.value = String(c.id_comunidad);
+                            opt.textContent = c.nombre_comunidad;
+                            comunidad.appendChild(opt);
+                        });
+
+                        // opcional: si el usuario quiere filtrar por país sin comunidad,
+                        // le dejamos también la lista de ciudades del país
+                        const dataCiudades = await cargarCiudadesDePais(idPais);
+                        ciudad.innerHTML = '<option value="">Todas las ciudades</option>';
+                        dataCiudades.forEach((c) => {
+                            const opt = document.createElement('option');
+                            opt.value = String(c.id_ciudad);
+                            opt.textContent = c.nombre_ciudad;
+                            ciudad.appendChild(opt);
+                        });
+                    } catch (e) {
+                        // fallback simple
+                        comunidad.innerHTML = comunidadesInicial;
+                        ciudad.innerHTML = ciudadesInicial;
+                    }
+                });
+
+                comunidad.addEventListener('change', async function () {
+                    const idComunidad = this.value;
+                    ciudad.value = '';
+
+                    if (!idComunidad) {
+                        ciudad.innerHTML = ciudadesInicial;
+                        return;
+                    }
+
+                    try {
+                        const dataCiudades = await cargarCiudadesDeComunidad(idComunidad);
+                        ciudad.innerHTML = '<option value="">Todas las ciudades</option>';
+                        dataCiudades.forEach((c) => {
+                            const opt = document.createElement('option');
+                            opt.value = String(c.id_ciudad);
+                            opt.textContent = c.nombre_ciudad;
+                            ciudad.appendChild(opt);
+                        });
+                    } catch (e) {
+                        ciudad.innerHTML = ciudadesInicial;
+                    }
+                });
+            });
+        </script>
 
         <!-- Linea separadora -->
         <div class="linea-separadora" aria-hidden="true"></div>

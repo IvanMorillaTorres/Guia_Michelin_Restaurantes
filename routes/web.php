@@ -52,6 +52,12 @@ Route::middleware('auth')->group(function () {
         return \App\Models\Comunidad::where('id_pais', $id)->orderBy('nombre_comunidad')->get();
     })->name('api.paises.comunidades');
 
+    Route::get('/api/paises/{id}/ciudades', function ($id) {
+        return \App\Models\Ciudad::whereHas('comunidad', function ($q) use ($id) {
+            $q->where('id_pais', $id);
+        })->orderBy('nombre_ciudad')->get();
+    })->name('api.paises.ciudades');
+
     Route::get('/api/comunidades/{id}/ciudades', function ($id) {
         return \App\Models\Ciudad::where('id_comunidad', $id)->orderBy('nombre_ciudad')->get();
     })->name('api.comunidades.ciudades');
