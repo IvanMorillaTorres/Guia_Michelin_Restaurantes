@@ -26,7 +26,7 @@
                     <!-- País -->
                     <label class="etiqueta-filtro etiqueta-select">
                         <span>País</span>
-                        <select name="pais" class="select-oculto" onchange="document.getElementById('formularioFiltros').submit()">
+                        <select name="pais" class="select-oculto" onchange="this.form.querySelector('select[name=\"comunidad\"]').value=''; this.form.querySelector('select[name=\"ciudad\"]').value=''; document.getElementById('formularioFiltros').submit()">
                             <option value="">Todos los países</option>
                             @foreach($paises as $pais)
                                 <option value="{{ $pais->id_pais }}" {{ request('pais') == $pais->id_pais ? 'selected' : '' }}>
@@ -39,7 +39,7 @@
                     <!-- Comunidad Autónoma -->
                     <label class="etiqueta-filtro etiqueta-select">
                         <span>Comunidad</span>
-                        <select name="comunidad" class="select-oculto" onchange="document.getElementById('formularioFiltros').submit()">
+                        <select name="comunidad" class="select-oculto" onchange="this.form.querySelector('select[name=\"ciudad\"]').value=''; document.getElementById('formularioFiltros').submit()">
                             <option value="">Todas las comunidades</option>
                             @foreach($comunidades as $comunidad)
                                 <option value="{{ $comunidad->id_comunidad }}" {{ request('comunidad') == $comunidad->id_comunidad ? 'selected' : '' }}>

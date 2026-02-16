@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Restaurante;
 use App\Models\Ciudad;
+use App\Models\Comunidad;
+use App\Models\Pais;
 use App\Models\Estilo;
 use App\Models\Imagen;
 use Illuminate\Http\Request;
@@ -27,7 +29,7 @@ class AdminRestauranteController extends Controller
     {
         // Iniciamos la consulta base cargando las relaciones necesarias (ciudad, estilos, imagen)
         // 'with' optimiza la consulta para no hacer una por cada restaurante (N+1 problem)
-        $consulta = Restaurante::with(['ciudad', 'estilos', 'imagenPrincipal']);
+        $consulta = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenPrincipal']);
 
         // --- APLICAR FILTROS ---
         
@@ -39,6 +41,20 @@ class AdminRestauranteController extends Controller
         // 2. Filtro por ciudad
         if ($solicitud->filled('ciudad')) {
             $consulta->where('id_ciudad', $solicitud->ciudad);
+        }
+
+        // 2b. Filtro por comunidad (acumulativo)
+        if ($solicitud->filled('comunidad')) {
+            $consulta->whereHas('ciudad', function ($q) use ($solicitud) {
+                $q->where('id_comunidad', $solicitud->comunidad);
+            });
+        }
+
+        // 2c. Filtro por país (acumulativo)
+        if ($solicitud->filled('pais')) {
+            $consulta->whereHas('ciudad.comunidad', function ($q) use ($solicitud) {
+                $q->where('id_pais', $solicitud->pais);
+            });
         }
 
         // 3. Filtro por estilo de cocina
@@ -72,13 +88,32 @@ class AdminRestauranteController extends Controller
         // Paginamos los resultados (10 por página) y mantenemos los filtros en la URL (withQueryString)
         $listaRestaurantes = $consulta->paginate(10)->withQueryString();
         
-        // Cargamos listas para los desplegables de filtros
-        $listaCiudades = Ciudad::orderBy('nombre_ciudad')->get();
+        // Cargamos listas para los desplegables de filtros (dependientes)
+        $listaPaises = Pais::orderBy('nombre')->get();
+
+        if ($solicitud->filled('pais')) {
+            $listaComunidades = Comunidad::where('id_pais', $solicitud->pais)->orderBy('nombre_comunidad')->get();
+        } else {
+            $listaComunidades = Comunidad::orderBy('nombre_comunidad')->get();
+        }
+
+        if ($solicitud->filled('comunidad')) {
+            $listaCiudades = Ciudad::where('id_comunidad', $solicitud->comunidad)->orderBy('nombre_ciudad')->get();
+        } elseif ($solicitud->filled('pais')) {
+            $listaCiudades = Ciudad::whereHas('comunidad', function ($q) use ($solicitud) {
+                $q->where('id_pais', $solicitud->pais);
+            })->orderBy('nombre_ciudad')->get();
+        } else {
+            $listaCiudades = Ciudad::orderBy('nombre_ciudad')->get();
+        }
+
         $listaEstilos = Estilo::orderBy('nombre_estilo')->get();
 
         // Devolvemos la vista con los datos
         return view('admin.restaurantes.index', [
             'restaurantes' => $listaRestaurantes,
+            'paises' => $listaPaises,
+            'comunidades' => $listaComunidades,
             'ciudades' => $listaCiudades,
             'estilos' => $listaEstilos
         ]);
@@ -89,11 +124,15 @@ class AdminRestauranteController extends Controller
      */
     public function crear()
     {
-        // Necesitamos ciudades y estilos para los selectores del formulario
+        // Necesitamos paises/comunidades/ciudades y estilos para los selectores del formulario
+        $listaPaises = Pais::orderBy('nombre')->get();
+        $listaComunidades = Comunidad::orderBy('nombre_comunidad')->get();
         $listaCiudades = Ciudad::orderBy('nombre_ciudad')->get();
         $listaEstilos = Estilo::orderBy('nombre_estilo')->get();
 
         return view('admin.restaurantes.crear', [
+            'paises' => $listaPaises,
+            'comunidades' => $listaComunidades,
             'ciudades' => $listaCiudades,
             'estilos' => $listaEstilos
         ]);
@@ -134,12 +173,16 @@ class AdminRestauranteController extends Controller
      */
     public function editar($id)
     {
-        $restaurante = Restaurante::with(['estilos', 'imagenes'])->findOrFail($id);
+        $restaurante = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenes'])->findOrFail($id);
+        $listaPaises = Pais::orderBy('nombre')->get();
+        $listaComunidades = Comunidad::orderBy('nombre_comunidad')->get();
         $listaCiudades = Ciudad::orderBy('nombre_ciudad')->get();
         $listaEstilos = Estilo::orderBy('nombre_estilo')->get();
 
         return view('admin.restaurantes.editar', [
             'restaurante' => $restaurante,
+            'paises' => $listaPaises,
+            'comunidades' => $listaComunidades,
             'ciudades' => $listaCiudades,
             'estilos' => $listaEstilos
         ]);

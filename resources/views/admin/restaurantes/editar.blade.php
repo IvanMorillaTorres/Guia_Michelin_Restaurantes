@@ -39,6 +39,32 @@
             <small class="js-error" id="error_nombre_restaurante" aria-live="polite"></small>
         </div>
 
+        <!-- País (filtro para ciudades) -->
+        <div class="campo-formulario">
+            <label for="filtro_pais">País</label>
+            <select id="filtro_pais" name="pais">
+                <option value="">Todos los países</option>
+                @foreach($paises as $pais)
+                    <option value="{{ $pais->id_pais }}" {{ old('pais', optional(optional(optional($restaurante->ciudad)->comunidad)->pais)->id_pais) == $pais->id_pais ? 'selected' : '' }}>
+                        {{ $pais->nombre }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Comunidad (filtro para ciudades) -->
+        <div class="campo-formulario">
+            <label for="filtro_comunidad">Comunidad</label>
+            <select id="filtro_comunidad" name="comunidad">
+                <option value="">Todas las comunidades</option>
+                @foreach($comunidades as $comunidad)
+                    <option value="{{ $comunidad->id_comunidad }}" {{ old('comunidad', optional(optional($restaurante->ciudad)->comunidad)->id_comunidad) == $comunidad->id_comunidad ? 'selected' : '' }}>
+                        {{ $comunidad->nombre_comunidad }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
         <!-- Ciudad -->
         <div class="campo-formulario">
             <label for="id_ciudad">Ciudad *</label>
@@ -162,6 +188,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const nombre = document.getElementById('nombre_restaurante');
     const ciudad = document.getElementById('id_ciudad');
+    const pais = document.getElementById('filtro_pais');
+    const comunidad = document.getElementById('filtro_comunidad');
     const tel = document.getElementById('telefono_restaurante');
     const web = document.getElementById('web_real_restaurante');
     const estilosContainer = document.getElementById('grupo_estilos');
@@ -175,6 +203,92 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const nombreRegex = /\d/;
     const telefonoRegex = /^\d{9}$/;
+
+    // --- selects dependientes (pais -> comunidades; comunidad -> ciudades) ---
+    const allComunidadesHtml = comunidad ? comunidad.innerHTML : '';
+    const allCiudadesHtml = ciudad ? ciudad.innerHTML : '';
+
+    async function cargarComunidades(idPais, comunidadSeleccionada = '') {
+        if (!comunidad) return;
+        if (!idPais) {
+            comunidad.innerHTML = allComunidadesHtml;
+            comunidad.value = '';
+            return;
+        }
+
+        const res = await fetch(`/api/paises/${idPais}/comunidades`, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) throw new Error('No se pudieron cargar comunidades');
+        const data = await res.json();
+
+        comunidad.innerHTML = '<option value="">Todas las comunidades</option>';
+        data.forEach((c) => {
+            const opt = document.createElement('option');
+            opt.value = String(c.id_comunidad);
+            opt.textContent = c.nombre_comunidad;
+            comunidad.appendChild(opt);
+        });
+        if (comunidadSeleccionada) comunidad.value = String(comunidadSeleccionada);
+    }
+
+    async function cargarCiudades(idComunidad, ciudadSeleccionada = '') {
+        if (!ciudad) return;
+        if (!idComunidad) {
+            ciudad.innerHTML = allCiudadesHtml;
+            ciudad.value = '';
+            return;
+        }
+
+        const res = await fetch(`/api/comunidades/${idComunidad}/ciudades`, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) throw new Error('No se pudieron cargar ciudades');
+        const data = await res.json();
+
+        ciudad.innerHTML = '<option value="">Seleccionar ciudad</option>';
+        data.forEach((c) => {
+            const opt = document.createElement('option');
+            opt.value = String(c.id_ciudad);
+            opt.textContent = c.nombre_ciudad;
+            ciudad.appendChild(opt);
+        });
+        if (ciudadSeleccionada) ciudad.value = String(ciudadSeleccionada);
+    }
+
+    if (pais) {
+        pais.addEventListener('change', async function () {
+            try {
+                if (comunidad) comunidad.value = '';
+                if (ciudad) {
+                    ciudad.innerHTML = allCiudadesHtml;
+                    ciudad.value = '';
+                }
+                await cargarComunidades(this.value);
+            } catch (e) {
+                if (comunidad) comunidad.innerHTML = allComunidadesHtml;
+            }
+        });
+    }
+
+    if (comunidad) {
+        comunidad.addEventListener('change', async function () {
+            try {
+                await cargarCiudades(this.value);
+            } catch (e) {
+                if (ciudad) ciudad.innerHTML = allCiudadesHtml;
+            }
+        });
+    }
+
+    // Inicializar (para que, si hay comunidad seleccionada, solo salgan sus ciudades)
+    (async () => {
+        try {
+            const oldPais = pais?.value || '';
+            const oldComunidad = comunidad?.value || '';
+            const oldCiudad = ciudad?.value || '';
+            if (oldPais) await cargarComunidades(oldPais, oldComunidad);
+            if (oldComunidad) await cargarCiudades(oldComunidad, oldCiudad);
+        } catch (e) {
+            // noop
+        }
+    })();
 
     const setError = (field, errorEl, msg) => {
         if (!field || !errorEl) return;
