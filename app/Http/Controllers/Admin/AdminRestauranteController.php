@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use App\Models\Restaurante;
 use App\Models\Ciudad;
 use App\Models\Comunidad;
@@ -16,22 +17,21 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Mail\NotificacionCrudRestaurante;
 
-/**
- * Controlador para gestionar los restaurantes en el panel de administración.
- * Permite listar, crear, editar y eliminar restaurantes.
- */
+
+//  Controlador para gestionar los restaurantes en el panel de administración.
+//  Permite listar, crear, editar y eliminar restaurantes.
+ 
 class AdminRestauranteController extends Controller
 {
-    /**
-     * Muestra la lista de restaurantes con filtros y ordenación.
-     */
+    // Muestra la lista de restaurantes con filtros y ordenación.
+    
     public function index(Request $solicitud)
     {
         // Iniciamos la consulta base cargando las relaciones necesarias (ciudad, estilos, imagen)
         // 'with' optimiza la consulta para no hacer una por cada restaurante (N+1 problem)
         $consulta = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenPrincipal']);
 
-        // --- APLICAR FILTROS ---
+        //  APLICAR FILTROS 
         
         // 1. Filtro por nombre (buscador)
         if ($solicitud->filled('busqueda')) {
@@ -70,7 +70,7 @@ class AdminRestauranteController extends Controller
             $consulta->where('valoracion_restaurante', '>=', $solicitud->valoracion);
         }
 
-        // --- APLICAR ORDENACIÓN ---
+        //APLICAR ORDENACIÓN
         
         // Obtenemos columna y dirección (por defecto: ordenar por ID ascendente)
         $ordenarPor = $solicitud->get('orden', 'id_restaurante');
@@ -83,7 +83,7 @@ class AdminRestauranteController extends Controller
         // Aplicamos el orden
         $consulta->orderBy($ordenarPor, $direccion);
 
-        // --- OBTENER DATOS FINALES ---
+        // OBTENER DATOS FINALES
 
         // Paginamos los resultados (10 por página) y mantenemos los filtros en la URL (withQueryString)
         $listaRestaurantes = $consulta->paginate(10)->withQueryString();
@@ -119,9 +119,8 @@ class AdminRestauranteController extends Controller
         ]);
     }
 
-    /**
-     * Muestra el formulario para crear un nuevo restaurante.
-     */
+    // Muestra el formulario para crear un nuevo restaurante.
+    
     public function crear()
     {
         // Necesitamos paises/comunidades/ciudades y estilos para los selectores del formulario
@@ -138,9 +137,8 @@ class AdminRestauranteController extends Controller
         ]);
     }
 
-    /**
-     * Guarda un nuevo restaurante en la base de datos.
-     */
+    // Guarda un nuevo restaurante en la base de datos.
+    
     public function guardar(Request $solicitud)
     {
         // 1. Validar los datos del formulario
@@ -168,9 +166,8 @@ class AdminRestauranteController extends Controller
             ->with('exito', 'Restaurante creado correctamente.');
     }
 
-    /**
-     * Muestra el formulario para editar un restaurante.
-     */
+    // Muestra el formulario para editar un restaurante.
+    
     public function editar($id)
     {
         $restaurante = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenes'])->findOrFail($id);
@@ -188,9 +185,8 @@ class AdminRestauranteController extends Controller
         ]);
     }
 
-    /**
-     * Actualiza un restaurante existente en la base de datos.
-     */
+    // Actualiza un restaurante existente en la base de datos.
+    
     public function actualizar(Request $solicitud, $id)
     {
         $restaurante = Restaurante::findOrFail($id);
@@ -220,9 +216,8 @@ class AdminRestauranteController extends Controller
             ->with('exito', 'Restaurante actualizado correctamente.');
     }
 
-    /**
-     * Elimina un restaurante de la base de datos.
-     */
+    // Elimina un restaurante de la base de datos.
+    
     public function eliminar($id)
     {
         $restaurante = Restaurante::findOrFail($id);
@@ -241,13 +236,15 @@ class AdminRestauranteController extends Controller
             }
         }
 
-        // 2. Eliminar relaciones y registros
-        $restaurante->estilos()->detach();
-        $restaurante->valoraciones()->delete();
-        $restaurante->comentarios()->delete();
-        $restaurante->guardadoPorUsuarios()->detach();
-        $restaurante->imagenes()->delete();
-        $restaurante->delete();
+        // 2. Eliminar relaciones y registros (transacción)
+        DB::transaction(function () use ($restaurante) {
+            $restaurante->estilos()->detach();
+            $restaurante->valoraciones()->delete();
+            $restaurante->comentarios()->delete();
+            $restaurante->guardadoPorUsuarios()->detach();
+            $restaurante->imagenes()->delete();
+            $restaurante->delete();
+        });
 
         // 3. Enviar correo de notificación
         $this->enviarCorreoNotificacion('eliminar', $datosCopia);
@@ -256,13 +253,11 @@ class AdminRestauranteController extends Controller
             ->with('exito', 'Restaurante eliminado correctamente.');
     }
 
-    // 
     //                      MÉTODOS PRIVADOS DE AYUDA
-    // 
+    
 
-    /**
-     * Valida los datos del formulario común (crear y editar).
-     */
+    // Valida los datos del formulario común (crear y editar).
+    
     private function validarFormulario(Request $solicitud)
     {
         return $solicitud->validate([
@@ -285,9 +280,8 @@ class AdminRestauranteController extends Controller
         ]);
     }
 
-    /**
-     * Sube las imágenes al servidor y crea los registros en la BD.
-     */
+    // Sube las imágenes al servidor y crea los registros en la BD.
+    
     private function subirImagenes(Request $solicitud, $idRestaurante)
     {
         if ($solicitud->hasFile('imagenes')) {

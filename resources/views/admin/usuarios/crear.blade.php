@@ -25,13 +25,13 @@
         <!-- Nombre -->
         <div class="campo-formulario">
             <label for="nombre">Nombre *</label>
-            <input type="text" id="nombre" name="nombre" value="{{ old('nombre') }}" required>
+            <input type="text" id="nombre" name="nombre" value="{{ old('nombre') }}">
         </div>
 
         <!-- Apellido 1 -->
         <div class="campo-formulario">
             <label for="apellido1">Primer apellido *</label>
-            <input type="text" id="apellido1" name="apellido1" value="{{ old('apellido1') }}" required>
+            <input type="text" id="apellido1" name="apellido1" value="{{ old('apellido1') }}">
         </div>
 
         <!-- Apellido 2 -->
@@ -43,13 +43,13 @@
         <!-- Email -->
         <div class="campo-formulario">
             <label for="email">Email *</label>
-            <input type="email" id="email" name="email" value="{{ old('email') }}" required>
+            <input type="email" id="email" name="email" value="{{ old('email') }}">
         </div>
 
         <!-- Contraseña -->
         <div class="campo-formulario">
             <label for="password">Contraseña *</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password">
             <small class="texto-gris">Mínimo 6 caracteres</small>
         </div>
 
@@ -68,7 +68,7 @@
         <!-- Rol -->
         <div class="campo-formulario">
             <label for="id_rol">Rol *</label>
-            <select id="id_rol" name="id_rol" required>
+            <select id="id_rol" name="id_rol">
                 <option value="">Seleccionar rol</option>
                 @foreach($roles as $rol)
                     <option value="{{ $rol->id_rol }}" {{ old('id_rol') == $rol->id_rol ? 'selected' : '' }}>
@@ -81,7 +81,7 @@
         <!-- Estado -->
         <div class="campo-formulario">
             <label for="estado">Estado *</label>
-            <select id="estado" name="estado" required>
+            <select id="estado" name="estado">
                 <option value="">Seleccionar estado</option>
                 <option value="activo" {{ old('estado') == 'activo' ? 'selected' : '' }}>Activo</option>
                 <option value="inactivo" {{ old('estado') == 'inactivo' ? 'selected' : '' }}>Inactivo</option>
