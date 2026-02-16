@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('imagen');
             $table->timestamp('fecha_creacion')->useCurrent();
             $table->unsignedBigInteger('id_restaurante');
-            $table->foreign('id_restaurante')->references('id_restaurante')->on('restaurantes')->onDelete('cascade');
+            $table->foreign('id_restaurante')->references('id_restaurante')->on('restaurantes');
         });
     }
 

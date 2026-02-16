@@ -241,8 +241,12 @@ class AdminRestauranteController extends Controller
             }
         }
 
-        // 2. Eliminar relaciones y registro
+        // 2. Eliminar relaciones y registros
         $restaurante->estilos()->detach();
+        $restaurante->valoraciones()->delete();
+        $restaurante->comentarios()->delete();
+        $restaurante->guardadoPorUsuarios()->detach();
+        $restaurante->imagenes()->delete();
         $restaurante->delete();
 
         // 3. Enviar correo de notificación
@@ -252,9 +256,9 @@ class AdminRestauranteController extends Controller
             ->with('exito', 'Restaurante eliminado correctamente.');
     }
 
-    // =========================================================================
+    // 
     //                      MÉTODOS PRIVADOS DE AYUDA
-    // =========================================================================
+    // 
 
     /**
      * Valida los datos del formulario común (crear y editar).

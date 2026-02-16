@@ -156,6 +156,10 @@ class AdminUserController extends Controller
                 ->with('error', 'No puedes eliminar tu propia cuenta.');
         }
 
+        // eliminar datos relacionados manualmente (sin cascade)
+        $usuario->valoraciones()->delete();
+        $usuario->comentarios()->delete();
+        $usuario->restaurantesGuardados()->detach();
         $usuario->delete();
 
         return redirect()->route('admin.usuarios.index')

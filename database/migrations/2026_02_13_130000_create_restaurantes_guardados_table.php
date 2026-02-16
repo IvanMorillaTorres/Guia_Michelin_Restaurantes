@@ -16,13 +16,11 @@ return new class extends Migration
 
             $table->foreign('id_users')
                 ->references('id_users')
-                ->on('users')
-                ->onDelete('cascade');
+                ->on('users');
 
             $table->foreign('id_restaurante')
                 ->references('id_restaurante')
-                ->on('restaurantes')
-                ->onDelete('cascade');
+                ->on('restaurantes');
 
             $table->unique(['id_users', 'id_restaurante']);
         });
