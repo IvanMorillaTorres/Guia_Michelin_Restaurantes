@@ -2493,3 +2493,84 @@ html[data-theme="dark"] .admin-vacio {
 html[data-theme="dark"] .container-admin {
     background: transparent;
 }
+
+/* Modo oscuro - Modal Bootstrap */
+html[data-theme="dark"] .modal-content {
+    background: #1e1e1e;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+html[data-theme="dark"] .modal-header {
+    border-bottom-color: #333;
+}
+
+html[data-theme="dark"] .modal-header .modal-title {
+    color: #e0e0e0;
+}
+
+html[data-theme="dark"] .modal-header .btn-close {
+    filter: invert(1);
+}
+
+html[data-theme="dark"] .modal-footer {
+    border-top-color: #333;
+}
+
+html[data-theme="dark"] .modal-body .form-control {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+html[data-theme="dark"] .modal-body .form-control:focus {
+    border-color: var(--rojo-michelin);
+    background: #2a2a2a;
+    box-shadow: 0 0 0 0.2rem rgba(215, 25, 33, 0.15);
+}
+
+html[data-theme="dark"] .modal-body label {
+    color: #ccc;
+}
+
+/* Botón cancelar mejorado (claro y oscuro) */
+.btn-admin-cancelar {
+    color: var(--gris-michelin);
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 600;
+    background: transparent;
+    border: 1px solid var(--color-borde);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+.btn-admin-cancelar:hover {
+    color: var(--texto-oscuro);
+    border-color: var(--texto-oscuro);
+    background: var(--gris-claro);
+}
+
+html[data-theme="dark"] .btn-admin-cancelar {
+    color: #aaa;
+    border-color: #444;
+    background: transparent;
+}
+
+html[data-theme="dark"] .btn-admin-cancelar:hover {
+    color: #e0e0e0;
+    border-color: #666;
+    background: #2a2a2a;
+}
+
+html[data-theme="dark"] .btn-admin-guardar {
+    background: #e0e0e0;
+    color: #121212;
+}
+
+html[data-theme="dark"] .btn-admin-guardar:hover {
+    background: #fff;
+}

@@ -4,6 +4,7 @@ use App\Http\Controllers\RestauranteController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\AdminRestauranteController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminEstiloController;
 use App\Http\Controllers\PerfilController;
 use Illuminate\Support\Facades\Route;
 
@@ -73,4 +74,10 @@ Route::prefix('admin')->middleware(['auth', 'esAdmin'])->group(function () {
     Route::get('/usuarios/{id}/editar', [AdminUserController::class, 'editar'])->name('admin.usuarios.editar');
     Route::put('/usuarios/{id}', [AdminUserController::class, 'actualizar'])->name('admin.usuarios.actualizar');
     Route::delete('/usuarios/{id}', [AdminUserController::class, 'eliminar'])->name('admin.usuarios.eliminar');
+
+    // CRUD de Estilos de Cocina
+    Route::get('/estilos', [AdminEstiloController::class, 'index'])->name('admin.estilos.index');
+    Route::post('/estilos', [AdminEstiloController::class, 'guardar'])->name('admin.estilos.guardar');
+    Route::put('/estilos/{id}', [AdminEstiloController::class, 'actualizar'])->name('admin.estilos.actualizar');
+    Route::delete('/estilos/{id}', [AdminEstiloController::class, 'eliminar'])->name('admin.estilos.eliminar');
 });

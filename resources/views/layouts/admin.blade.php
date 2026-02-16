@@ -27,6 +27,9 @@
                         <a href="{{ route('admin.usuarios.index') }}" class="{{  request()->routeIs('admin.usuarios.*') ? 'activo' : '' }}">
                             <i class="bi bi-people"></i> Usuarios
                         </a>
+                        <a href="{{ route('admin.estilos.index') }}" class="{{  request()->routeIs('admin.estilos.*') ? 'activo' : '' }}">
+                            <i class="bi bi-palette"></i> Estilos
+                        </a>
                         <a href="{{ route('restaurantes.index') }}">
                             <i class="bi bi-eye"></i> Ver web
                         </a>
@@ -151,5 +154,6 @@
             }
         });
     </script>
+    @stack('scripts')
 </body>
 </html>
