@@ -82,16 +82,22 @@ class AdminRestauranteController extends Controller
         ]);
 
         // crear el restaurante
-        $restaurante = Restaurante::create([
+        $datosRestaurante = [
             'nombre_restaurante' => $datos['nombre_restaurante'],
             'slug' => Str::slug($datos['nombre_restaurante']),
             'telefono_restaurante' => $datos['telefono_restaurante'] ?? null,
             'precio_restaurante' => $datos['precio_restaurante'] ?? null,
             'descripcion_restaurante' => $datos['descripcion_restaurante'] ?? null,
-            'valoracion_restaurante' => $datos['valoracion_restaurante'] ?? null,
             'web_real_restaurante' => $datos['web_real_restaurante'] ?? null,
             'id_ciudad' => $datos['id_ciudad'],
-        ]);
+        ];
+
+        // solo agregar valoracion si tiene valor
+        if (!empty($datos['valoracion_restaurante'])) {
+            $datosRestaurante['valoracion_restaurante'] = $datos['valoracion_restaurante'];
+        }
+
+        $restaurante = Restaurante::create($datosRestaurante);
 
         // asociar estilos de cocina
         if (!empty($datos['estilos'])) {
@@ -142,16 +148,22 @@ class AdminRestauranteController extends Controller
         ]);
 
         // actualizar datos del restaurante
-        $restaurante->update([
+        $datosRestaurante = [
             'nombre_restaurante' => $datos['nombre_restaurante'],
             'slug' => Str::slug($datos['nombre_restaurante']),
             'telefono_restaurante' => $datos['telefono_restaurante'] ?? null,
             'precio_restaurante' => $datos['precio_restaurante'] ?? null,
             'descripcion_restaurante' => $datos['descripcion_restaurante'] ?? null,
-            'valoracion_restaurante' => $datos['valoracion_restaurante'] ?? null,
             'web_real_restaurante' => $datos['web_real_restaurante'] ?? null,
             'id_ciudad' => $datos['id_ciudad'],
-        ]);
+        ];
+
+        // solo actualizar valoracion si tiene valor
+        if (!empty($datos['valoracion_restaurante'])) {
+            $datosRestaurante['valoracion_restaurante'] = $datos['valoracion_restaurante'];
+        }
+
+        $restaurante->update($datosRestaurante);
 
         // sincronizar estilos
         $restaurante->estilos()->sync($datos['estilos'] ?? []);

@@ -128,7 +128,7 @@
                         <a href="{{ route('admin.restaurantes.editar', $restaurante->id_restaurante) }}" class="btn-admin-editar" title="Editar">
                             <i class="bi bi-pencil"></i>
                         </a>
-                        <form method="POST" action="{{ route('admin.restaurantes.eliminar', $restaurante->id_restaurante) }}" style="display:inline;" onsubmit="return confirm('¿Seguro que quieres eliminar este restaurante?')">
+                        <form method="POST" action="{{ route('admin.restaurantes.eliminar', $restaurante->id_restaurante) }}" style="display:inline;" onsubmit="confirmarEliminacion(event, '¿Estás seguro de que deseas eliminar este restaurante? Se eliminarán también todas sus imágenes.')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn-admin-eliminar" title="Eliminar">

@@ -3,6 +3,7 @@
 use App\Http\Controllers\RestauranteController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\AdminRestauranteController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\PerfilController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,10 +41,19 @@ Route::middleware('auth')->group(function () {
 
 // --- panel de administracion (solo admin) ---
 Route::prefix('admin')->middleware(['auth', 'esAdmin'])->group(function () {
+    // CRUD de Restaurantes
     Route::get('/restaurantes', [AdminRestauranteController::class, 'index'])->name('admin.restaurantes.index');
     Route::get('/restaurantes/crear', [AdminRestauranteController::class, 'crear'])->name('admin.restaurantes.crear');
     Route::post('/restaurantes', [AdminRestauranteController::class, 'guardar'])->name('admin.restaurantes.guardar');
     Route::get('/restaurantes/{id}/editar', [AdminRestauranteController::class, 'editar'])->name('admin.restaurantes.editar');
     Route::put('/restaurantes/{id}', [AdminRestauranteController::class, 'actualizar'])->name('admin.restaurantes.actualizar');
     Route::delete('/restaurantes/{id}', [AdminRestauranteController::class, 'eliminar'])->name('admin.restaurantes.eliminar');
+
+    // CRUD de Usuarios
+    Route::get('/usuarios', [AdminUserController::class, 'index'])->name('admin.usuarios.index');
+    Route::get('/usuarios/crear', [AdminUserController::class, 'crear'])->name('admin.usuarios.crear');
+    Route::post('/usuarios', [AdminUserController::class, 'guardar'])->name('admin.usuarios.guardar');
+    Route::get('/usuarios/{id}/editar', [AdminUserController::class, 'editar'])->name('admin.usuarios.editar');
+    Route::put('/usuarios/{id}', [AdminUserController::class, 'actualizar'])->name('admin.usuarios.actualizar');
+    Route::delete('/usuarios/{id}', [AdminUserController::class, 'eliminar'])->name('admin.usuarios.eliminar');
 });
