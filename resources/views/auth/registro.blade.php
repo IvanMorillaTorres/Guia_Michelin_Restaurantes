@@ -22,11 +22,11 @@
                 <div class="registro-fila">
                     <div class="campo-formulario">
                         <label for="nombre">Nombre</label>
-                        <input type="text" id="nombre" name="nombre" value="{{ old('nombre') }}" required autofocus placeholder="Tu nombre">
+                        <input type="text" id="nombre" name="nombre" value="{{ old('nombre') }}" autofocus placeholder="Tu nombre">
                     </div>
                     <div class="campo-formulario">
                         <label for="apellido1">Primer apellido</label>
-                        <input type="text" id="apellido1" name="apellido1" value="{{ old('apellido1') }}" required placeholder="Primer apellido">
+                        <input type="text" id="apellido1" name="apellido1" value="{{ old('apellido1') }}" placeholder="Primer apellido">
                     </div>
                 </div>
                 <div class="registro-fila">
@@ -41,16 +41,16 @@
                 </div>
                 <div class="campo-formulario">
                     <label for="email">Correo electrónico</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" required placeholder="tu@email.com">
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="tu@email.com">
                 </div>
                 <div class="registro-fila">
                     <div class="campo-formulario">
                         <label for="password">Contraseña</label>
-                        <input type="password" id="password" name="password" required placeholder="Mínimo 6 caracteres">
+                        <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres">
                     </div>
                     <div class="campo-formulario">
                         <label for="password_confirmation">Confirmar contraseña</label>
-                        <input type="password" id="password_confirmation" name="password_confirmation" required placeholder="Repite la contraseña">
+                        <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Repite la contraseña">
                     </div>
                 </div>
                 <button type="submit" class="btn-login">

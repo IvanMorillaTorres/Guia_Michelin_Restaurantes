@@ -13,8 +13,8 @@ return new class extends Migration
             $table->id('id_rest_estilos');
             $table->unsignedBigInteger('id_estilo');
             $table->unsignedBigInteger('id_restaurante');
-            $table->foreign('id_estilo')->references('id_estilo')->on('estilos')->onDelete('cascade');
-            $table->foreign('id_restaurante')->references('id_restaurante')->on('restaurantes')->onDelete('cascade');
+            $table->foreign('id_estilo')->references('id_estilo')->on('estilos');
+            $table->foreign('id_restaurante')->references('id_restaurante')->on('restaurantes');
             $table->unique(['id_estilo', 'id_restaurante']);
         });
     }

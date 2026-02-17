@@ -39,7 +39,7 @@
                                     name="nombre"
                                     class="form-control @error('nombre') is-invalid @enderror"
                                     value="{{ old('nombre', $usuario->nombre) }}"
-                                    required
+
                                     maxlength="255"
                                     data-msg-required="El nombre es obligatorio."
                                     data-msg-invalid="El nombre no puede contener números."
@@ -58,7 +58,7 @@
                                     name="apellido1"
                                     class="form-control @error('apellido1') is-invalid @enderror"
                                     value="{{ old('apellido1', $usuario->apellido1) }}"
-                                    required
+
                                     maxlength="255"
                                     data-msg-required="El primer apellido es obligatorio."
                                     data-msg-invalid="El apellido no puede contener números."
@@ -114,7 +114,7 @@
                                     name="email"
                                     class="form-control @error('email') is-invalid @enderror"
                                     value="{{ old('email', $usuario->email) }}"
-                                    required
+
                                     maxlength="255"
                                     data-msg-required="El correo es obligatorio."
                                     data-msg-invalid="Introduce un email válido."
@@ -169,7 +169,6 @@
                                 type="password"
                                 name="password_actual"
                                 class="form-control @error('password_actual') is-invalid @enderror"
-                                required
                                 autocomplete="current-password"
                             >
                             @error('password_actual')
@@ -186,7 +185,6 @@
                                 type="password"
                                 name="password_nueva"
                                 class="form-control @error('password_nueva') is-invalid @enderror"
-                                required
                                 minlength="6"
                                 autocomplete="new-password"
                             >
@@ -204,7 +202,6 @@
                                 type="password"
                                 name="password_nueva_confirmation"
                                 class="form-control"
-                                required
                                 minlength="6"
                                 autocomplete="new-password"
                             >

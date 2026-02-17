@@ -149,7 +149,7 @@
 
                     <div class="campo-formulario" style="margin-bottom:1rem;">
                         <label for="nombre_estilo">Nombre del estilo *</label>
-                        <input type="text" id="nombre_estilo" name="nombre_estilo" value="{{ old('nombre_estilo') }}" required maxlength="255" class="form-control">
+                        <input type="text" id="nombre_estilo" name="nombre_estilo" value="{{ old('nombre_estilo') }}" maxlength="255" class="form-control">
                     </div>
                     <div class="campo-formulario">
                         <label for="descripcion_estilo">Descripción</label>

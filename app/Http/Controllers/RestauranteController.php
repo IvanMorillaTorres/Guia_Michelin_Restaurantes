@@ -32,40 +32,40 @@ class RestauranteController extends Controller
             });
         }
 
-        // --- FILTROS DE UBICACIÓN ACUMULATIVOS ---
+        // filtros de ubicacion
 
-        // 1. Filtro por País
+        // filtro por pais
         if ($request->filled('pais')) {
             $consulta->whereHas('ciudad.comunidad', function ($q) use ($request) {
                 $q->where('id_pais', $request->pais);
             });
         }
 
-        // 2. Filtro por Comunidad Autónoma
+        // filtro por comunidad autonoma
         if ($request->filled('comunidad')) {
             $consulta->whereHas('ciudad', function ($q) use ($request) {
                 $q->where('id_comunidad', $request->comunidad);
             });
         }
 
-        // 3. Filtro por Ciudad
+        // filtro por ciudad
         if ($request->filled('ciudad')) {
             $consulta->where('id_ciudad', $request->ciudad);
         }
 
-        // --- CARGA DE LISTAS DEPENDIENTES (ACUMULATIVAS) ---
+        // cargamos las listas para los selects
 
-        // Países: Siempre mostramos todos
+        // paises: siempre todos
         $paises = Pais::orderBy('nombre')->get();
 
-        // Comunidades: Dependen del país seleccionado
+        // comunidades: dependen del pais
         if ($request->filled('pais')) {
             $comunidades = Comunidad::where('id_pais', $request->pais)->orderBy('nombre_comunidad')->get();
         } else {
             $comunidades = Comunidad::orderBy('nombre_comunidad')->get();
         }
 
-        // Ciudades: Dependen de la comunidad o del país
+        // ciudades: dependen de la comunidad o del pais
         if ($request->filled('comunidad')) {
             $ciudades = Ciudad::where('id_comunidad', $request->comunidad)->orderBy('nombre_ciudad')->get();
         } elseif ($request->filled('pais')) {
@@ -76,7 +76,7 @@ class RestauranteController extends Controller
             $ciudades = Ciudad::orderBy('nombre_ciudad')->get();
         }
 
-        // --- RESTO DE FILTROS ---
+        // resto de filtros
 
         // filtro por estilos de cocina
         $estilosSeleccionados = $request->input('estilos');
@@ -140,7 +140,7 @@ class RestauranteController extends Controller
         // paginar de 12 en 12
         $restaurantes = $consulta->paginate(12)->withQueryString();
 
-        // ids de restaurantes guardados por el usuario (para pintar el corazon)
+        // sacamos los ids de restaurantes guardados por el usuario (pa pintar el corazon)
         $guardadosIds = [];
         if (Auth::check()) {
             $guardadosIds = Auth::user()
@@ -185,14 +185,14 @@ class RestauranteController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // buscar restaurantes parecidos de la misma ciudad
+        // buscamos restaurantes parecidos en la misma ciudad
         $parecidos = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenPrincipal'])
             ->where('id_restaurante', '!=', $restaurante->id_restaurante)
             ->where('id_ciudad', $restaurante->id_ciudad)
             ->limit(4)
             ->get();
 
-        // devolver la vista
+        // devolver vista
         return view('restaurantes.mostrar', compact('restaurante', 'parecidos', 'valoracionUsuario', 'estaGuardado', 'comentarios'));
     }
 
@@ -205,7 +205,7 @@ class RestauranteController extends Controller
 
         $restaurante = Restaurante::where('slug', $slug)->firstOrFail();
 
-        // No se puede comentar sin haber valorado antes
+        // si no ha valorado no puede comentar
         $puntuacion = Valoracion::where('id_restaurante', $restaurante->id_restaurante)
             ->where('id_users', Auth::id())
             ->value('puntuacion');
@@ -217,7 +217,7 @@ class RestauranteController extends Controller
                 ->withInput();
         }
 
-        // Solo 1 comentario por restaurante y usuario
+        // solo un comentario por restaurante
         $yaComentado = Comentario::where('id_restaurante', $restaurante->id_restaurante)
             ->where('id_users', Auth::id())
             ->exists();
@@ -285,14 +285,14 @@ class RestauranteController extends Controller
             ]
         );
 
-        // recalcular media y guardarla en restaurantes.valoracion_restaurante
+        // recalculamos la media y la guardamos
         $media = Valoracion::where('id_restaurante', $restaurante->id_restaurante)->avg('puntuacion');
         $restaurante->valoracion_restaurante = round((float) $media, 1);
         $restaurante->save();
 
         $count = Valoracion::where('id_restaurante', $restaurante->id_restaurante)->count();
 
-        // respuesta JSON para AJAX (sin recargar)
+        // si es AJAX respondemos en JSON
         if ($request->expectsJson()) {
             return response()->json([
                 'ok' => true,

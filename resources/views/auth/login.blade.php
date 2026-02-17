@@ -27,11 +27,11 @@
                 @csrf
                 <div class="campo-formulario">
                     <label for="email">Correo electrónico</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus placeholder="tu@email.com">
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" autofocus placeholder="tu@email.com">
                 </div>
                 <div class="campo-formulario">
                     <label for="password">Contraseña</label>
-                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                    <input type="password" id="password" name="password" placeholder="••••••••">
                 </div>
                 <button type="submit" class="btn-login">
                     <i class="bi bi-box-arrow-in-right"></i> Entrar

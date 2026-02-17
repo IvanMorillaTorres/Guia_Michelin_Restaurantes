@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamp('fecha_creacion')->useCurrent();
             $table->timestamp('fecha_edicion')->nullable()->useCurrentOnUpdate();
             $table->unsignedBigInteger('id_comunidad');
-            $table->foreign('id_comunidad')->references('id_comunidad')->on('comunidades')->onDelete('cascade');
+            $table->foreign('id_comunidad')->references('id_comunidad')->on('comunidades');
         });
     }
 

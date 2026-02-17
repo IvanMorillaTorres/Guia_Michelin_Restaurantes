@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Rol;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AdminUserController extends Controller
@@ -156,11 +157,15 @@ class AdminUserController extends Controller
                 ->with('error', 'No puedes eliminar tu propia cuenta.');
         }
 
-        $usuario->delete();
+        // eliminar datos relacionados manualmente (transacción)
+        DB::transaction(function () use ($usuario) {
+            $usuario->valoraciones()->delete();
+            $usuario->comentarios()->delete();
+            $usuario->restaurantesGuardados()->detach();
+            $usuario->delete();
+        });
 
         return redirect()->route('admin.usuarios.index')
             ->with('exito', 'Usuario eliminado correctamente.');
     }
 }
-
-?>

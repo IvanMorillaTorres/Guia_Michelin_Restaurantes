@@ -31,7 +31,6 @@
                 id="nombre_restaurante"
                 name="nombre_restaurante"
                 value="{{ old('nombre_restaurante', $restaurante->nombre_restaurante) }}"
-                required
                 maxlength="255"
                 data-msg-required="El nombre del restaurante es obligatorio."
                 data-msg-invalid="El nombre del restaurante no puede contener números."
@@ -71,7 +70,6 @@
             <select
                 id="id_ciudad"
                 name="id_ciudad"
-                required
                 data-msg-required="Selecciona una ciudad."
             >
                 <option value="">Seleccionar ciudad</option>
@@ -92,7 +90,6 @@
                 id="telefono_restaurante"
                 name="telefono_restaurante"
                 value="{{ old('telefono_restaurante', $restaurante->telefono_restaurante) }}"
-                required
                 maxlength="9"
                 inputmode="tel"
                 placeholder="600000000"
@@ -116,7 +113,6 @@
                 id="web_real_restaurante"
                 name="web_real_restaurante"
                 value="{{ old('web_real_restaurante', $restaurante->web_real_restaurante) }}"
-                required
                 maxlength="255"
                 placeholder="https://..."
                 data-msg-required="La página web es obligatoria."

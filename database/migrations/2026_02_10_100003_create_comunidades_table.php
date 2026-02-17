@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamp('fecha_creacion')->useCurrent();
             $table->timestamp('fecha_edicion')->nullable()->useCurrentOnUpdate();
             $table->unsignedBigInteger('id_pais');
-            $table->foreign('id_pais')->references('id_pais')->on('paises')->onDelete('cascade');
+            $table->foreign('id_pais')->references('id_pais')->on('paises');
         });
     }
 
