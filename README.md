@@ -142,7 +142,11 @@ El esquema de la base de datos está definido en las migraciones de Laravel. Las
 
 ---
 
-## Autor
+## Autores
 
-**Iván Morilla Torres**  
-Estudiante de DAW — Curso 2025/2026
+- **Iván Morilla Torres**
+- **Marc Navarro Gómez**
+- **Maksym Derezyuk**
+- **Paula Moreno León**
+
+Estudiantes de DAW — Curso 2025/2026
