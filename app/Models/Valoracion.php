@@ -19,11 +19,13 @@ class Valoracion extends Model
         'puntuacion' => 'integer',
     ];
 
+    // la valoracion pertenece a un restaurante
     public function restaurante()
     {
         return $this->belongsTo(Restaurante::class, 'id_restaurante', 'id_restaurante');
     }
 
+    // la valoracion pertenece a un usuario
     public function usuario()
     {
         return $this->belongsTo(User::class, 'id_users', 'id_users');

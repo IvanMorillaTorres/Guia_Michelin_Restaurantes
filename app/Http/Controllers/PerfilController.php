@@ -9,18 +9,20 @@ use Illuminate\Validation\Rule;
 
 class PerfilController extends Controller
 {
+    // mostrar la pagina de perfil con los restaurantes guardados
     public function mostrar()
     {
         $usuario = Auth::user();
 
         $guardados = $usuario->restaurantesGuardados()
-            ->with(['ciudad.comunidad.pais', 'estilos', 'imagenPrincipal'])
-            ->orderBy('restaurantes_guardados.created_at', 'desc')
+            ->with(['ciudad.comunidad.pais', 'estilos', 'imagenPrincipal']) // cargamos las relaciones de golpe
+            ->orderBy('restaurantes_guardados.created_at', 'desc') // ordenamos por fecha
             ->get();
 
-        return view('perfil', compact('usuario', 'guardados'));
+        return view('perfil', compact('usuario', 'guardados')); // le pasamos las variables a la vista
     }
 
+    // actualizar los datos personales del usuario
     public function actualizarDatos(Request $request)
     {
         $usuario = Auth::user();
@@ -33,6 +35,7 @@ class PerfilController extends Controller
                 'required',
                 'email',
                 'max:255',
+                // comprobamos que el email sea unico pero ignorando el del propio usuario
                 Rule::unique('users', 'email')->ignore($usuario->id_users, 'id_users'),
             ],
             'telefono' => ['nullable', 'regex:/^\d{9}$/'],
@@ -50,12 +53,13 @@ class PerfilController extends Controller
             'nacimiento.before' => 'La fecha de nacimiento no puede ser futura.',
         ]);
 
-        $usuario->fill($datos);
-        $usuario->save();
+        $usuario->fill($datos); // rellenamos los campos con los datos validados
+        $usuario->save(); // guardamos en la BD
 
-        return back()->with('perfil_ok', 'Datos actualizados correctamente.');
+        return back()->with('perfil_ok', 'Datos actualizados correctamente.'); // volvemos con mensaje de exito
     }
 
+    // cambiar la contraseña del usuario
     public function actualizarPassword(Request $request)
     {
         $usuario = Auth::user();
@@ -70,8 +74,9 @@ class PerfilController extends Controller
             'password_nueva.confirmed' => 'Las contraseñas no coinciden.',
         ]);
 
+        // comprobamos que la contraseña actual sea correcta
         if (!Hash::check($request->password_actual, $usuario->password_hash)) {
-            return back()->withErrors([
+            return back()->withErrors([ // volvemos con el error
                 'password_actual' => 'La contraseña actual no es correcta.',
             ]);
         }

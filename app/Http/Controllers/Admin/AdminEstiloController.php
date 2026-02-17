@@ -11,13 +11,14 @@ class AdminEstiloController extends Controller
     // listado de estilos en el panel admin
     public function index(Request $request)
     {
-        $consulta = Estilo::withCount('restaurantes');
+        $consulta = Estilo::withCount('restaurantes'); // sacamos tambien cuantos restaurantes tiene cada estilo
 
         // busqueda por nombre
         if ($request->filled('busqueda')) {
             $consulta->where('nombre_estilo', 'like', "%{$request->busqueda}%");
         }
 
+        // paginamos y mantenemos los filtros en los enlaces
         $estilos = $consulta->orderBy('nombre_estilo')->paginate(10)->withQueryString();
 
         return view('admin.estilos.index', compact('estilos'));
@@ -34,7 +35,7 @@ class AdminEstiloController extends Controller
             'nombre_estilo.unique'   => 'Ya existe un estilo con ese nombre.',
         ]);
 
-        Estilo::create($datos);
+        Estilo::create($datos); // guardamos el nuevo estilo en la BD
 
         return redirect()->route('admin.estilos.index')
             ->with('exito', 'Estilo de cocina creado correctamente.');
@@ -43,7 +44,7 @@ class AdminEstiloController extends Controller
     // actualizar el estilo en la base de datos
     public function actualizar(Request $request, $id)
     {
-        $estilo = Estilo::findOrFail($id);
+        $estilo = Estilo::findOrFail($id); // buscamos el estilo, si no existe salta 404
 
         $datos = $request->validate([
             'nombre_estilo'      => 'required|string|max:255|unique:estilos,nombre_estilo,' . $estilo->id_estilo . ',id_estilo',
@@ -53,7 +54,7 @@ class AdminEstiloController extends Controller
             'nombre_estilo.unique'   => 'Ya existe un estilo con ese nombre.',
         ]);
 
-        $estilo->update($datos);
+        $estilo->update($datos); // actualizamos en la BD
 
         return redirect()->route('admin.estilos.index')
             ->with('exito', 'Estilo de cocina actualizado correctamente.');
@@ -70,7 +71,7 @@ class AdminEstiloController extends Controller
                 ->with('error', "No se puede eliminar «{$estilo->nombre_estilo}» porque tiene {$estilo->restaurantes_count} restaurante(s) asociado(s).");
         }
 
-        $estilo->delete();
+        $estilo->delete(); // lo borramos de la BD
 
         return redirect()->route('admin.estilos.index')
             ->with('exito', 'Estilo de cocina eliminado correctamente.');

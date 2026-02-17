@@ -14,9 +14,9 @@ class AdminUserController extends Controller
     // listado de usuarios en el panel admin
     public function index(Request $request)
     {
-        $consulta = User::with('rol');
+        $consulta = User::with('rol'); // cargamos la relacion con el rol
 
-        // busqueda por nombre o email
+        // busqueda por nombre o email (solo si han buscado algo)
         if ($request->filled('busqueda')) {
             $busqueda = $request->busqueda;
             $consulta->where(function ($q) use ($busqueda) {
@@ -37,6 +37,7 @@ class AdminUserController extends Controller
             $consulta->where('estado', $request->estado);
         }
 
+        // paginamos de 10 en 10 y mantenemos los filtros en los enlaces
         $usuarios = $consulta->orderBy('id_users', 'desc')->paginate(10)->withQueryString();
         $roles = Rol::orderBy('nombre')->get();
 
@@ -79,7 +80,7 @@ class AdminUserController extends Controller
             'apellido1'  => $datos['apellido1'],
             'apellido2'  => $datos['apellido2'] ?? null,
             'email'      => $datos['email'],
-            'password_hash' => Hash::make($datos['password']),
+            'password_hash' => Hash::make($datos['password']), // hasheamos la contraseña
             'telefono'   => $datos['telefono'] ?? null,
             'nacimiento' => $datos['nacimiento'] ?? null,
             'id_rol'     => $datos['id_rol'],
@@ -93,7 +94,7 @@ class AdminUserController extends Controller
     // formulario para editar un usuario existente
     public function editar($id)
     {
-        $usuario = User::findOrFail($id);
+        $usuario = User::findOrFail($id); // buscamos el usuario, si no existe salta 404
         $roles = Rol::orderBy('nombre')->get();
 
         return view('admin.usuarios.editar', compact('usuario', 'roles'));
@@ -108,7 +109,7 @@ class AdminUserController extends Controller
             'nombre'     => 'required|string|max:255',
             'apellido1'  => 'required|string|max:255',
             'apellido2'  => 'nullable|string|max:255',
-            'email'      => 'required|email|max:255|unique:users,email,' . $usuario->id_users . ',id_users',
+            'email'      => 'required|email|max:255|unique:users,email,' . $usuario->id_users . ',id_users', // email unico, pero sin contar el del propio usuario
             'password'   => 'nullable|string|min:6',
             'telefono'   => 'nullable|string|max:20',
             'nacimiento' => 'nullable|date',
@@ -140,7 +141,7 @@ class AdminUserController extends Controller
             $datosActualizar['password_hash'] = Hash::make($datos['password']);
         }
 
-        $usuario->update($datosActualizar);
+        $usuario->update($datosActualizar); // actualizamos los datos en la BD
 
         return redirect()->route('admin.usuarios.index')
             ->with('exito', 'Usuario actualizado correctamente.');
@@ -152,16 +153,17 @@ class AdminUserController extends Controller
         $usuario = User::findOrFail($id);
 
         // no permitir que el admin se elimine a sí mismo
-        if ($usuario->id_users == auth()->id()) {
+        if ($usuario->id_users == auth()->id()) { // miramos que no se este eliminando a si mismo
             return redirect()->route('admin.usuarios.index')
                 ->with('error', 'No puedes eliminar tu propia cuenta.');
         }
 
         // eliminar datos relacionados manualmente (transacción)
+        // eliminamos todo lo relacionado en una transaccion (si algo falla se deshace todo)
         DB::transaction(function () use ($usuario) {
-            $usuario->valoraciones()->delete();
+            $usuario->valoraciones()->delete(); // borramos sus valoraciones
             $usuario->comentarios()->delete();
-            $usuario->restaurantesGuardados()->detach();
+            $usuario->restaurantesGuardados()->detach(); // quitamos sus restaurantes guardados
             $usuario->delete();
         });
 

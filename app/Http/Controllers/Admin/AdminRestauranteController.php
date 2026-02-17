@@ -27,7 +27,7 @@ class AdminRestauranteController extends Controller
         // cargamos las relaciones para no hacer mil consultas (evita el N+1)
         $consulta = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenPrincipal']);
 
-        // filtro por nombre
+        // filtro por nombre (solo si han buscado algo)
         if ($solicitud->filled('busqueda')) {
             $consulta->where('nombre_restaurante', 'like', "%{$solicitud->busqueda}%");
         }
@@ -78,7 +78,7 @@ class AdminRestauranteController extends Controller
 
         // datos finales
 
-        // paginamos de 10 en 10 y mantenemos los filtros en la URL
+        // paginamos de 10 en 10 y conservamos los filtros en los enlaces
         $listaRestaurantes = $consulta->paginate(10)->withQueryString();
         
         // listas para los selects de filtros
@@ -135,14 +135,14 @@ class AdminRestauranteController extends Controller
         // validamos los datos
         $datosValidados = $this->validarFormulario($solicitud);
 
-        // creamos el slug para la URL amigable
+        // generamos el slug para la URL amigable (ej: "La Pepita" -> "la-pepita")
         $datosValidados['slug'] = Str::slug($datosValidados['nombre_restaurante']);
         
         $nuevoRestaurante = Restaurante::create($datosValidados);
 
         // guardamos los estilos
         if (!empty($datosValidados['estilos'])) {
-            $nuevoRestaurante->estilos()->attach($datosValidados['estilos']);
+            $nuevoRestaurante->estilos()->attach($datosValidados['estilos']); // los asociamos en la tabla pivot
         }
 
         // subimos las imagenes
@@ -151,7 +151,7 @@ class AdminRestauranteController extends Controller
         // mandamos correo al admin
         $this->enviarCorreoNotificacion('crear', $nuevoRestaurante);
 
-        // redirigimos al listado
+        // redirigimos al listado con mensaje de exito
         return redirect()->route('admin.restaurantes.index')
             ->with('exito', 'Restaurante creado correctamente.');
     }
@@ -159,6 +159,7 @@ class AdminRestauranteController extends Controller
     // formulario para editar restaurante
     public function editar($id)
     {
+        // buscamos el restaurante con sus relaciones, si no existe salta 404
         $restaurante = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenes'])->findOrFail($id);
         $listaPaises = Pais::orderBy('nombre')->get();
         $listaComunidades = Comunidad::orderBy('nombre_comunidad')->get();
@@ -186,13 +187,13 @@ class AdminRestauranteController extends Controller
         $datosValidados['slug'] = Str::slug($datosValidados['nombre_restaurante']);
         $restaurante->update($datosValidados);
 
-        // sync de estilos (quita los viejos y mete los nuevos)
+        // actualizamos los estilos: quita los viejos y mete los nuevos
         $restaurante->estilos()->sync($datosValidados['estilos']);
 
         // subimos imagenes nuevas si hay
         $this->subirImagenes($solicitud, $restaurante->id_restaurante);
 
-        // borramos las imagenes que el admin haya marcado
+        // si el admin ha marcado imagenes para borrar las eliminamos
         if ($solicitud->has('eliminar_imagenes')) {
             $this->eliminarImagenesSeleccionadas($solicitud->eliminar_imagenes);
         }
@@ -219,13 +220,14 @@ class AdminRestauranteController extends Controller
         // borramos las imagenes del disco
         foreach ($restaurante->imagenes as $imagen) {
             if (!str_starts_with($imagen->imagen, 'assets/')) {
+                // borramos el archivo del disco
                 Storage::disk('public')->delete($imagen->imagen);
             }
         }
 
-        // borramos todo lo relacionado en una transaccion
+        // borramos todo lo relacionado dentro de una transaccion (si algo falla se deshace todo)
         DB::transaction(function () use ($restaurante) {
-            $restaurante->estilos()->detach();
+            $restaurante->estilos()->detach(); // quitamos las relaciones de la tabla pivot
             $restaurante->valoraciones()->delete();
             $restaurante->comentarios()->delete();
             $restaurante->guardadoPorUsuarios()->detach();
@@ -271,7 +273,7 @@ class AdminRestauranteController extends Controller
     {
         if ($solicitud->hasFile('imagenes')) {
             foreach ($solicitud->file('imagenes') as $archivo) {
-                // guarda el archivo en storage/public/restaurantes
+                // guardamos el archivo en storage/public/restaurantes y nos devuelve la ruta
                 $ruta = $archivo->store('restaurantes', 'public');
                 
                 Imagen::create([
@@ -307,11 +309,12 @@ class AdminRestauranteController extends Controller
         $usuario = auth()->user();
 
         try {
+            // mandamos el correo
             Mail::to($destinatario)->send(
                 new NotificacionCrudRestaurante($accion, $datosRestaurante, $usuario)
             );
         } catch (\Exception $e) {
-            // si peta el correo al menos lo dejamos en el log
+            // si peta el correo al menos lo apuntamos en el log
             Log::error("Error enviando correo ($accion): " . $e->getMessage());
         }
     }

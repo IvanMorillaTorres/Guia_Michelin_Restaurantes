@@ -18,14 +18,16 @@ class RestauranteController extends Controller
     // mostrar todos los restaurantes con filtros
     public function index(Request $request)
     {
-        // empezamos la consulta cargando las relaciones
+        // cargamos las relaciones de golpe para no hacer una consulta por cada restaurante
         $consulta = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenPrincipal']);
 
         // busqueda por texto (nombre de restaurante o ciudad)
         if ($request->busqueda != '') {
             $busqueda = $request->busqueda;
+            // agrupamos las condiciones para que busque en nombre O en ciudad
             $consulta->where(function ($q) use ($busqueda) {
                 $q->where('nombre_restaurante', 'like', "%{$busqueda}%")
+                  // tambien buscamos en la tabla de ciudades por si coincide ahi
                   ->orWhereHas('ciudad', function ($qc) use ($busqueda) {
                       $qc->where('nombre_ciudad', 'like', "%{$busqueda}%");
                   });
@@ -34,8 +36,9 @@ class RestauranteController extends Controller
 
         // filtros de ubicacion
 
-        // filtro por pais
+        // filtro por pais (solo si han seleccionado uno)
         if ($request->filled('pais')) {
+            // buscamos restaurantes cuya ciudad pertenezca a ese pais
             $consulta->whereHas('ciudad.comunidad', function ($q) use ($request) {
                 $q->where('id_pais', $request->pais);
             });
@@ -55,7 +58,7 @@ class RestauranteController extends Controller
 
         // cargamos las listas para los selects
 
-        // paises: siempre todos
+        // sacamos todos los paises ordenados por nombre
         $paises = Pais::orderBy('nombre')->get();
 
         // comunidades: dependen del pais
@@ -78,7 +81,7 @@ class RestauranteController extends Controller
 
         // resto de filtros
 
-        // filtro por estilos de cocina
+        // sacamos los estilos que ha marcado el usuario en el filtro
         $estilosSeleccionados = $request->input('estilos');
         if (!empty($estilosSeleccionados)) {
             if (!is_array($estilosSeleccionados)) {
@@ -124,7 +127,7 @@ class RestauranteController extends Controller
             $consulta->where('valoracion_restaurante', '>=', $request->valoracion_min);
         }
 
-        // ordenar los resultados
+        // ordenar los resultados (por defecto ordena por nombre)
         $orden = $request->get('orden', 'nombre');
 
         if ($orden == 'precio_asc') {
@@ -137,7 +140,7 @@ class RestauranteController extends Controller
             $consulta->orderBy('nombre_restaurante', 'asc');
         }
 
-        // paginar de 12 en 12
+        // paginamos de 12 en 12 y mantenemos los filtros en los enlaces de paginacion
         $restaurantes = $consulta->paginate(12)->withQueryString();
 
         // sacamos los ids de restaurantes guardados por el usuario (pa pintar el corazon)
@@ -145,14 +148,14 @@ class RestauranteController extends Controller
         if (Auth::check()) {
             $guardadosIds = Auth::user()
                 ->restaurantesGuardados()
-                ->pluck('restaurantes.id_restaurante')
+                ->pluck('restaurantes.id_restaurante') // sacamos solo los IDs
                 ->toArray();
         }
 
         // sacar datos para los filtros del formulario (estilos siempre todos)
         $estilos = Estilo::orderBy('nombre_estilo')->get();
 
-        // devolver la vista con los datos
+        // le pasamos todas las variables a la vista con compact
         return view('restaurantes.index', compact('restaurantes', 'paises', 'comunidades', 'ciudades', 'estilos', 'guardadosIds'));
     }
 
@@ -160,13 +163,15 @@ class RestauranteController extends Controller
     public function mostrar($slug)
     {
         // buscar el restaurante por su slug
+        // cargamos el restaurante con todas sus relaciones, si no existe salta 404
         $restaurante = Restaurante::with(['ciudad.comunidad.pais', 'estilos', 'imagenes'])
-            ->withCount('valoraciones')
+            ->withCount('valoraciones') // nos trae tambien cuantas valoraciones tiene
             ->where('slug', $slug)
             ->firstOrFail();
 
         $valoracionUsuario = null;
         if (Auth::check()) {
+            // miramos si el usuario ya ha votado y sacamos su puntuacion
             $valoracionUsuario = $restaurante->valoraciones()
                 ->where('id_users', Auth::id())
                 ->value('puntuacion');
@@ -177,7 +182,7 @@ class RestauranteController extends Controller
             $estaGuardado = Auth::user()
                 ->restaurantesGuardados()
                 ->where('restaurantes.id_restaurante', $restaurante->id_restaurante)
-                ->exists();
+                ->exists(); // comprobamos si lo tiene guardado o no
         }
 
         $comentarios = Comentario::with('usuario')
@@ -199,6 +204,7 @@ class RestauranteController extends Controller
     // guardar un comentario
     public function comentar(Request $request, $slug)
     {
+        // validamos el texto, si falla Laravel redirige solo con los errores
         $datos = $request->validate([
             'texto' => 'required|string|min:2|max:1000',
         ]);
@@ -214,7 +220,7 @@ class RestauranteController extends Controller
             return redirect()
                 ->route('restaurantes.mostrar', $restaurante->slug)
                 ->withErrors(['texto' => 'Debes dejar una valoración (estrellas) antes de comentar.'])
-                ->withInput();
+                ->withInput(); // devolvemos lo que habia escrito para que no lo pierda
         }
 
         // solo un comentario por restaurante
@@ -228,6 +234,7 @@ class RestauranteController extends Controller
                 ->withErrors(['texto' => 'Solo puedes comentar una vez en este restaurante.']);
         }
 
+        // guardamos el comentario en la BD
         Comentario::create([
             'id_restaurante' => $restaurante->id_restaurante,
             'id_users' => Auth::id(),
@@ -237,7 +244,7 @@ class RestauranteController extends Controller
 
         return redirect()
             ->route('restaurantes.mostrar', $restaurante->slug)
-            ->with('comentario_ok', 'Comentario publicado.');
+            ->with('comentario_ok', 'Comentario publicado.'); // mandamos un mensaje de exito
     }
 
     // guardar/quitar un restaurante de guardados
@@ -251,11 +258,12 @@ class RestauranteController extends Controller
             ->exists();
 
         if ($ya) {
-            $usuario->restaurantesGuardados()->detach($restaurante->id_restaurante);
+            $usuario->restaurantesGuardados()->detach($restaurante->id_restaurante); // lo quitamos de guardados
         } else {
-            $usuario->restaurantesGuardados()->attach($restaurante->id_restaurante);
+            $usuario->restaurantesGuardados()->attach($restaurante->id_restaurante); // lo añadimos a guardados
         }
 
+        // si la peticion viene por AJAX respondemos en JSON
         if ($request->expectsJson()) {
             return response()->json([
                 'ok' => true,
@@ -263,7 +271,7 @@ class RestauranteController extends Controller
             ]);
         }
 
-        return back();
+        return back(); // si no es AJAX simplemente volvemos a la pagina anterior
     }
 
     // guardar/actualizar una valoracion del usuario
@@ -275,6 +283,7 @@ class RestauranteController extends Controller
 
         $restaurante = Restaurante::where('slug', $slug)->firstOrFail();
 
+        // si ya habia votado le actualizamos la puntuacion, si no la creamos nueva
         Valoracion::updateOrCreate(
             [
                 'id_restaurante' => $restaurante->id_restaurante,
@@ -285,7 +294,7 @@ class RestauranteController extends Controller
             ]
         );
 
-        // recalculamos la media y la guardamos
+        // recalculamos la media de todas las valoraciones
         $media = Valoracion::where('id_restaurante', $restaurante->id_restaurante)->avg('puntuacion');
         $restaurante->valoracion_restaurante = round((float) $media, 1);
         $restaurante->save();

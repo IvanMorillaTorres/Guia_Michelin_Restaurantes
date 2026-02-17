@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 // clase pa mandar correos cuando se toca algo de restaurantes
 class NotificacionCrudRestaurante extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels; // permite enviar el correo en segundo plano con colas
 
     // variables publicas: se pasan solas a la vista del correo
     public $tipoAccion;      // crear, editar o eliminar
@@ -27,10 +27,10 @@ class NotificacionCrudRestaurante extends Mailable
         $this->usuarioAutor = $usuarioAutor;
     }
 
-    // asunto del correo
+    // definimos el asunto del correo
     public function envelope(): Envelope
     {
-        // ponemos un asunto segun la accion
+        // ponemos un asunto segun la accion (match es como switch pero mas limpio)
         $asunto = match ($this->tipoAccion) {
             'crear' => 'Nuevo restaurante creado',
             'editar' => 'Restaurante actualizado',
@@ -43,7 +43,7 @@ class NotificacionCrudRestaurante extends Mailable
         );
     }
 
-    // contenido del correo (la vista HTML)
+    // aqui indicamos que vista blade usamos para el cuerpo del correo
     public function content(): Content
     {
         return new Content(
@@ -51,7 +51,7 @@ class NotificacionCrudRestaurante extends Mailable
         );
     }
 
-    // adjuntos (no hay)
+    // archivos adjuntos (no mandamos ninguno)
     public function attachments(): array
     {
         return [];

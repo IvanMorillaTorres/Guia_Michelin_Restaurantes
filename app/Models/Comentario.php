@@ -20,11 +20,13 @@ class Comentario extends Model
         'puntuacion' => 'integer',
     ];
 
+    // el comentario pertenece a un restaurante
     public function restaurante()
     {
         return $this->belongsTo(Restaurante::class, 'id_restaurante', 'id_restaurante');
     }
 
+    // el comentario pertenece a un usuario
     public function usuario()
     {
         return $this->belongsTo(User::class, 'id_users', 'id_users');
