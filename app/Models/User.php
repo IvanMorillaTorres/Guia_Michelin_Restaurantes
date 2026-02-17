@@ -65,33 +65,25 @@ class User extends Authenticatable
         return $this->hasMany(Comentario::class, 'id_users', 'id_users');
     }
 
-    /**
-     * Obtener el nombre de la columna de contraseña
-     */
+    // nombre de la columna del password
     public function getAuthPasswordName()
     {
         return 'password_hash';
     }
 
-    /**
-     * Obtener la contraseña hasheada para autenticación
-     */
+    // devuelve el hash del password pa la auth
     public function getAuthPassword()
     {
         return $this->password_hash;
     }
 
-    /**
-     * Accessor para password que retorna password_hash
-     */
+    // accessor: si piden password devolvemos password_hash
     public function getPasswordAttribute()
     {
         return $this->password_hash ?? null;
     }
 
-    /**
-     * Mutator para password que hashea el valor a password_hash
-     */
+    // mutator: cuando meten password lo hasheamos y lo guardamos en password_hash
     public function setPasswordAttribute($value)
     {
         $this->attributes['password_hash'] = \Illuminate\Support\Facades\Hash::make($value);

@@ -8,35 +8,25 @@ use Illuminate\Support\Facades\Hash;
 
 class CreateAdminCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+    // nombre del comando
     protected $signature = 'app:create-admin';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
+    // descripcion del comando
     protected $description = 'Crear usuario administrador';
 
-    /**
-     * Execute the console command.
-     */
+    // ejecutar el comando
     public function handle()
     {
-        // Verificar si el usuario admin ya existe
+        // miramos si ya existe el admin
         $user = User::where('email', 'admin@michelin.com')->first();
 
         if ($user) {
-            $this->info('✓ El usuario admin ya existe.');
+            $this->info('El usuario admin ya existe.');
             $this->line('   Email: ' . $user->email);
             return 0;
         }
 
-        // Crear el usuario admin
+        // si no existe lo creamos
         try {
             User::create([
                 'nombre' => 'Admin',
@@ -51,12 +41,12 @@ class CreateAdminCommand extends Command
                 'id_rol' => 1,
             ]);
 
-            $this->info('✓ Usuario administrador creado correctamente!');
+            $this->info('Usuario administrador creado correctamente!');
             $this->line('   Email: admin@michelin.com');
             $this->line('   Contraseña: admin123');
             return 0;
         } catch (\Exception $e) {
-            $this->error('✗ Error al crear el usuario: ' . $e->getMessage());
+            $this->error('Error al crear el usuario: ' . $e->getMessage());
             return 1;
         }
     }

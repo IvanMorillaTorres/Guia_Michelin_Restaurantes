@@ -9,26 +9,17 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-/**
- * Clase para el envío de notificaciones por correo electrónico.
- * Se encarga de pasar los datos a la vista y definir el asunto.
- */
+// clase pa mandar correos cuando se toca algo de restaurantes
 class NotificacionCrudRestaurante extends Mailable
 {
     use Queueable, SerializesModels;
 
-    // Variables públicas: Se pasan automáticamente a la vista del correo
-    public $tipoAccion;      // 'crear', 'editar' o 'eliminar'
-    public $datosRestaurante; // Objeto con los datos del restaurante
-    public $usuarioAutor;     // Usuario que realizó la acción
+    // variables publicas: se pasan solas a la vista del correo
+    public $tipoAccion;      // crear, editar o eliminar
+    public $datosRestaurante; // datos del restaurante
+    public $usuarioAutor;     // quien hizo la accion
 
-    /**
-     * Constructor: Recibe los datos al crear una nueva notificación.
-     * 
-     * @param string $tipoAccion Tipo de operación realizada
-     * @param object $datosRestaurante Información del restaurante
-     * @param object $usuarioAutor (Opcional) Usuario que hizo el cambio
-     */
+    // constructor: recibe los datos
     public function __construct($tipoAccion, $datosRestaurante, $usuarioAutor = null)
     {
         $this->tipoAccion = $tipoAccion;
@@ -36,12 +27,10 @@ class NotificacionCrudRestaurante extends Mailable
         $this->usuarioAutor = $usuarioAutor;
     }
 
-    /**
-     * Define el "sobre" del correo (Asunto y remitente).
-     */
+    // asunto del correo
     public function envelope(): Envelope
     {
-        // Definimos un asunto descriptivo según la acción
+        // ponemos un asunto segun la accion
         $asunto = match ($this->tipoAccion) {
             'crear' => 'Nuevo restaurante creado',
             'editar' => 'Restaurante actualizado',
@@ -54,9 +43,7 @@ class NotificacionCrudRestaurante extends Mailable
         );
     }
 
-    /**
-     * Define el contenido del correo (Vista HTML).
-     */
+    // contenido del correo (la vista HTML)
     public function content(): Content
     {
         return new Content(
@@ -64,9 +51,7 @@ class NotificacionCrudRestaurante extends Mailable
         );
     }
 
-    /**
-     * Adjuntos del correo (vacío en este caso).
-     */
+    // adjuntos (no hay)
     public function attachments(): array
     {
         return [];
